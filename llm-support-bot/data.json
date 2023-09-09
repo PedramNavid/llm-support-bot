@@ -1,0 +1,2084 @@
+[
+  {
+    "id": "I_kwDOB9hbPs5uKA-t",
+    "number": 15822,
+    "title": "RecursionError: maximum recursion depth exceeded in comparison",
+    "bodyText": "Dagster version\n1.4.5\nWhat's the issue?\nIt's occurring on every dbt step when we have lots of runs in parallel (20+).\n\n\nFull logs:\nCopy\nRecursionError: maximum recursion depth exceeded in comparison\n\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/plan/execute_plan.py\", line 273, in dagster_event_sequence_for_step\n    for step_event in check.generator(step_events):\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/plan/execute_step.py\", line 415, in core_dagster_event_sequence_for_step\n    for evt in _type_check_and_store_output(step_context, user_event):\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/plan/execute_step.py\", line 468, in _type_check_and_store_output\n    for evt in _store_output(step_context, step_output_handle, output):\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/plan/execute_step.py\", line 706, in _store_output\n    for materialization in _get_output_asset_materializations(\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/plan/execute_step.py\", line 511, in _get_output_asset_materializations\n    input_provenance_data = _get_input_provenance_data(asset_key, step_context)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/plan/execute_step.py\", line 580, in _get_input_provenance_data\n    version_info = step_context.get_input_asset_version_info(key)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/context/system.py\", line 890, in get_input_asset_version_info\n    self._fetch_input_asset_version_info(key)\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/context/system.py\", line 916, in _fetch_input_asset_version_info\n    event = self._get_input_asset_event(key)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/context/system.py\", line 983, in _get_input_asset_event\n    return self._get_input_asset_event(key, retries + 1)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/context/system.py\", line 983, in _get_input_asset_event\n    return self._get_input_asset_event(key, retries + 1)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/context/system.py\", line 983, in _get_input_asset_event\n    return self._get_input_asset_event(key, retries + 1)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  [Previous line repeated 944 more times]\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/execution/context/system.py\", line 972, in _get_input_asset_event\n    event = self.instance.get_latest_data_version_record(key)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/instance/__init__.py\", line 2733, in get_latest_data_version_record\n    observations = self.get_event_records(\n                   ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_utils/__init__.py\", line 650, in inner\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/instance/__init__.py\", line 1853, in get_event_records\n    return self._event_storage.get_event_records(event_records_filter, limit, ascending)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/storage/event_log/sql_event_log.py\", line 919, in get_event_records\n    asset_details = next(iter(self._get_assets_details([event_records_filter.asset_key])))\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster/_core/storage/event_log/sql_event_log.py\", line 1439, in _get_assets_details\n    with self.index_connection() as conn:\n  File \"/usr/local/lib/python3.11/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster_postgres/utils.py\", line 165, in create_pg_connection\n    conn = retry_pg_connection_fn(engine.connect)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/dagster_postgres/utils.py\", line 117, in retry_pg_connection_fn\n    return fn()\n           ^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py\", line 3325, in connect\n    return self._connection_cls(self, close_with_result=close_with_result)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py\", line 96, in __init__\n    else engine.raw_connection()\n         ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py\", line 3404, in raw_connection\n    return self._wrap_pool_connect(self.pool.connect, _connection)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py\", line 3371, in _wrap_pool_connect\n    return fn()\n           ^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py\", line 327, in connect\n    return _ConnectionFairy._checkout(self)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py\", line 894, in _checkout\n    fairy = _ConnectionRecord.checkout(pool)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py\", line 493, in checkout\n    rec = pool._do_get()\n          ^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/impl.py\", line 256, in _do_get\n    return self._create_connection()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py\", line 273, in _create_connection\n    return _ConnectionRecord(self)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py\", line 388, in __init__\n    self.__connect()\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py\", line 690, in __connect\n    with util.safe_reraise():\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/util/langhelpers.py\", line 70, in __exit__\n    compat.raise_(\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/util/compat.py\", line 211, in raise_\n    raise exception\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py\", line 686, in __connect\n    self.dbapi_connection = connection = pool._invoke_creator(self)\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/create.py\", line 574, in connect\n    return dialect.connect(*cargs, **cparams)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py\", line 598, in connect\n    return self.dbapi.connect(*cargs, **cparams)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/newrelic/hooks/database_psycopg2.py\", line 135, in __call__\n    return super(ConnectionFactory, self).__call__(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/newrelic/hooks/database_dbapi2.py\", line 109, in __call__\n    return self.__connection_wrapper__(self.__wrapped__(\n                                       ^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/psycopg2/__init__.py\", line 122, in connect\n    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/psycopg2/extensions.py\", line 163, in make_dsn\n    dsn = \" \".join([\"{}={}\".format(k, _param_escape(str(v)))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/psycopg2/extensions.py\", line 163, in <listcomp>\n    dsn = \" \".join([\"{}={}\".format(k, _param_escape(str(v)))\n                                      ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/psycopg2/extensions.py\", line 181, in _param_escape\n    s = re_escape.sub(r'\\\\\\1', s)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/re/__init__.py\", line 317, in _subx\n    template = _compile_repl(template, pattern)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\nWhat did you expect to happen?\nNo response\nHow to reproduce?\nNo response\nDeployment type\nDagster Helm chart\nDeployment details\nRunning on Kubernetes on GKE\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-12T16:50:47Z",
+    "closedAt": "2023-08-29T17:33:31Z",
+    "url": "https://github.com/dagster-io/dagster/issues/15822",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 3
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uOMfB",
+    "number": 15823,
+    "title": "Bus error (core dumped) when using `dagster dev`",
+    "bodyText": "Dagster version\ndagster, version 1.4.5\nWhat's the issue?\nI have an open shift pod where I wish to learn and locally develop dagster. I ssh into the pod using oc rsh <pod> and create a new conda environment and install dagster as per the instructions. When I attempt to run dagster dev I get the following error:\n2023-08-14 07:38:06 +0000 - dagster - INFO - Using temporary directory /home/jovyan/work/dagster_test/my-dagster-project/tmpezu95xhw for storage. This will be removed when dagster dev exits.\n2023-08-14 07:38:06 +0000 - dagster - INFO - To persist information across sessions, set the environment variable DAGSTER_HOME to a directory to use.\nBus error (core dumped)\n\nWhat did you expect to happen?\nOn trying the same on my local MacBook I got\n2023-08-14 10:31:07 +0300 - dagster - INFO - Using temporary directory /Users/mahadeva/Research/my-dagster-project/tmp_1xdv008 for storage. This will be removed when dagster dev exits.\n2023-08-14 10:31:07 +0300 - dagster - INFO - To persist information across sessions, set the environment variable DAGSTER_HOME to a directory to use.\n2023-08-14 10:31:08 +0300 - dagster - INFO - Launching Dagster services...\n\n  Telemetry:\n\n  As an open source project, we collect usage statistics to inform development priorities. For more\n  information, read https://docs.dagster.io/getting-started/telemetry.\n\n  We will not see or store solid definitions, pipeline definitions, modes, resources, context, or\n  any data that is processed within solids and pipelines.\n\n  To opt-out, add the following to $DAGSTER_HOME/dagster.yaml, creating that file if necessary:\n\n    telemetry:\n      enabled: false\n\n\n  Welcome to Dagster!\n\n  If you have any questions or would like to engage with the Dagster team, please join us on Slack\n  (https://bit.ly/39dvSsF).\n\n2023-08-14 10:31:10 +0300 - dagster.daemon - INFO - Instance is configured with the following daemons: ['AssetDaemon', 'BackfillDaemon', 'SchedulerDaemon', 'SensorDaemon']\n2023-08-14 10:31:10 +0300 - dagster.daemon.SensorDaemon - INFO - Not checking for any runs since no sensors have been started.\n2023-08-14 10:31:11 +0300 - dagster-webserver - INFO - Serving dagster-webserver on http://127.0.0.1:3000 in process 32280\n\nwhich is what I expected\nHow to reproduce?\nUnsure\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nI wish to learn dagster locally before a proper deployment. I have a Spark cluster on my university's openshift platform. This has a has a pod Jupyter Notebook. I typically submit spark jobs through the command line of this notebook pod. I first wish to try and create dragster assets by wrapping my spark code into functions and create asset dependencies. This is the reason I wish to locally develop on the pod first before any proper deployment solution.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-14T07:52:45Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15823",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uQ6VS",
+    "number": 15825,
+    "title": "Simplify setting allow_nonexistent_upstream_partitions",
+    "bodyText": "What's the use case?\nWe would like to provide data owners with the ability to configure allow_nonexistent_upstream_partitions in their dbt models.\nCurrently the only way to pass this in when constructing an Asset in Dagster is by defining a TimeWindowPartitionsMapping.\nIdeas of implementation\nIdeally this setting can be defined at the asset level so that it is applied to all AssetIns, OR can be set while creating the AssetIns dictionary.\nasset = AssetsDefinition(\n    ...\n    allow_nonexistent_upstream_partitions=True\n)\nOr\nins = {\"parent_asset\": (\"parent_op\": In(allow_nonexistent_upstream_partitions=True, Nothing))}\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-14T14:42:02Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15825",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uSuhT",
+    "number": 15837,
+    "title": "Add automaterialize_policy to graph_multi_asset",
+    "bodyText": "@OwenKephart @johannkm is there any reason we don't currently have this or is it just an oversight?",
+    "state": "OPEN",
+    "createdAt": "2023-08-14T19:25:07Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15837",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uVSs5",
+    "number": 15846,
+    "title": "Add `get_freshness_policy` and `get_automaterialize_policy` as methods to `DagsterDbtTranslator`",
+    "bodyText": "What's the use case?\nCurrent version: Dagster 1.4.5+\nIssue:\n\nAt present, the only way to add freshness and automaterialize policies to dbt assets is by adding this as meta data in the dbt models\nIMO, this logic shouldn't reside in the dbt, as these are Dagster concepts and therefore should be implemented in the DagsterDbtTranslator\nIn particular, our use case is to add an auto-materialize and freshness policy to all dbt assets with a specific dbt tag. At present, this would require us to write non-DRY code in our dbt models (i.e. add the policies to each model), or completely refactor our dbt schemas to be one schema per tag (which is not flexible)\nSo adding this logic to Dagster is the most flexible approach. This also means that all Dagster logic can live in Dagster (vs a separate repo which should not have knowledge of Dagster)\n\nIdeas of implementation\nImplement aget_freshness_policy and get_automaterialize_policy methods to the DagsterDbtTranslator, similar to the existing get_metadata\nAdditional information\nMock up example of how an end solution / implementation might look like:\nclass CustomDagsterDbtTranslator(DagsterDbtTranslator):\n    def get_freshness_policy(self, dbt_resource_props: Mapping[str, Any]) -> Mapping[str, Any]:\n        if \"my_dbt_tag\" in dbt_resource_props[\"config\"][\"tags\"]:)\n            policy = {\n                \"freshness_policy\": {\n                    \"maximum_lag_minutes\": 60,\n                    \"cron_schedule\": \"0 * * * *\",\n                    \"cron_schedule_timezone\": \"UTC\",\n                },\n            }\n            return {\n                \"dbt_policy\": policy\n            }\n        return super().get_freshness_policy(dbt_resource_props)\n    \n    def get_automaterialize_policy(self, dbt_resource_props: Mapping[str, Any]) -> Mapping[str, Any]:\n        if \"my_dbt_tag\" in dbt_resource_props[\"config\"][\"tags\"]:)\n            policy = {\n                \"auto_materialize_policy\": {\"type\": \"eager\"},\n            }\n            return {\n                \"dbt_policy\": policy\n            }\n        return super().get_automaterialize_policy(dbt_resource_props)\n\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-15T08:23:49Z",
+    "closedAt": "2023-08-16T18:01:06Z",
+    "url": "https://github.com/dagster-io/dagster/issues/15846",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uXD1o",
+    "number": 15852,
+    "title": "Support for Freshness Policy for Static Partition assets",
+    "bodyText": "What's the use case?\nIt is very painful to not be able to define a freshness policy for StaticPartition assets:\ndagster._check.ParameterCheckError: Invariant violation for parameter freshness_policies_by_key. Description: FreshnessPolicies are currently unsupported for assets with partitions of type <class 'dagster._core.definitions.partition.StaticPartitionsDefinition'>.\nIs this in the works? It is a big gap I feel.\nIdeas of implementation\nNo response\nAdditional information\nBig pain point.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-15T14:27:30Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15852",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 2
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uXI3A",
+    "number": 15853,
+    "title": "Website navbar bug",
+    "bodyText": "Dagster version\nWebsite\nWhat's the issue?\nWhen you hover on the \"sign in\" button, the navbar height will be changed!!\n\nWhat did you expect to happen?\nthe navbar height will not be changed!!\nHow to reproduce?\nJust visit the website\nDeployment type\nOther\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-15T14:40:12Z",
+    "closedAt": "2023-08-15T16:16:31Z",
+    "url": "https://github.com/dagster-io/dagster/issues/15853",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uYVqp",
+    "number": 15859,
+    "title": "`1.4.5` raises an error when contexts arguments aren't passed around",
+    "bodyText": "Dagster version\ndagster, version 1.4.5\nWhat's the issue?\nIn 1.4.5, when invoking an asset that takes a context but not passing one, DagsterInvalidInvocationError is raised with the message \"Decorated function <your_asset> has context argument, but no context was provided when invoking.\" Versions previous (at least 1.3.9 and 1.4.4) this instead works fine.\nWhat did you expect to happen?\nI'm not sure where I learnt this tbf, but I've been working under the assumption that we didn't need to pass around context around, because before 1.4.5 that has worked fine (i.e. resources from a config.yaml can be accessed in assets which didn't have context passed around). So I assume no error should be getting raised here\u2014let me know if I've been doing it wrong all this time!\nHow to reproduce?\n# pipeline.py\nfrom dagster import asset, graph\n\n@asset()\ndef data(context) -> int:\n    return 42\n\n@graph\ndef do_stuff():\n    data()\n$ dagster execute -f pipeline.py\n1.4.5 traceback\nTraceback (most recent call last):\n  File \"<env>/bin/dagster\", line 8, in <module>\n    sys.exit(main())\n  File \"<env>/lib/python3.10/site-packages/dagster/_cli/__init__.py\", line 48, in main\n    cli(auto_envvar_prefix=ENV_PREFIX)  # pylint:disable=E1123\n  File \"<env>/lib/python3.10/site-packages/click/core.py\", line 1130, in __call__\n    return self.main(*args, **kwargs)\n  File \"<env>/lib/python3.10/site-packages/click/core.py\", line 1055, in main\n    rv = self.invoke(ctx)\n  File \"<env>/lib/python3.10/site-packages/click/core.py\", line 1657, in invoke\n    return _process_result(sub_ctx.command.invoke(sub_ctx))\n  File \"<env>/lib/python3.10/site-packages/click/core.py\", line 1657, in invoke\n    return _process_result(sub_ctx.command.invoke(sub_ctx))\n  File \"<env>/lib/python3.10/site-packages/click/core.py\", line 1404, in invoke\n    return ctx.invoke(self.callback, **ctx.params)\n  File \"<env>/lib/python3.10/site-packages/click/core.py\", line 760, in invoke\n    return __callback(*args, **kwargs)\n  File \"<env>/lib/python3.10/site-packages/dagster/_cli/job.py\", line 317, in job_execute_command\n    execute_execute_command(instance, kwargs)\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/telemetry.py\", line 170, in wrap\n    result = f(*args, **kwargs)\n  File \"<env>/lib/python3.10/site-packages/dagster/_cli/job.py\", line 330, in execute_execute_command\n    job_origin = get_job_python_origin_from_kwargs(kwargs)\n  File \"<env>/lib/python3.10/site-packages/dagster/_cli/workspace/cli_target.py\", line 531, in get_job_python_origin_from_kwargs\n    repository_origin = get_repository_python_origin_from_kwargs(kwargs)\n  File \"<env>/lib/python3.10/site-packages/dagster/_cli/workspace/cli_target.py\", line 652, in get_repository_python_origin_from_kwargs\n    code_pointer_dict = _get_code_pointer_dict_from_kwargs(kwargs)\n  File \"<env>/lib/python3.10/site-packages/dagster/_cli/workspace/cli_target.py\", line 572, in _get_code_pointer_dict_from_kwargs\n    for loadable_target in get_loadable_targets(\n  File \"<env>/lib/python3.10/site-packages/dagster/_grpc/utils.py\", line 37, in get_loadable_targets\n    else loadable_targets_from_python_file(python_file, working_directory)\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/workspace/autodiscovery.py\", line 26, in loadable_targets_from_python_file\n    loaded_module = load_python_file(python_file, working_directory)\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/code_pointer.py\", line 83, in load_python_file\n    return import_module_from_path(module_name, python_file)\n  File \"<env>/lib/python3.10/site-packages/dagster/_seven/__init__.py\", line 49, in import_module_from_path\n    spec.loader.exec_module(module)\n  File \"<frozen importlib._bootstrap_external>\", line 883, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n  File \"pipeline.py\", line 9, in <module>\n    def graph():\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/definitions/decorators/graph_decorator.py\", line 196, in graph\n    return _Graph()(compose_fn)\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/definitions/decorators/graph_decorator.py\", line 79, in __call__\n    ) = do_composition(\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/definitions/composition.py\", line 1035, in do_composition\n    output = fn(**kwargs)\n  File \"pipeline.py\", line 10, in graph\n    data()\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/definitions/assets.py\", line 299, in __call__\n    return direct_invocation_result(self, *args, **kwargs)\n  File \"<env>/lib/python3.10/site-packages/dagster/_core/definitions/op_invocation.py\", line 145, in direct_invocation_result\n    raise DagsterInvalidInvocationError(\ndagster._core.errors.DagsterInvalidInvocationError: Decorated function 'data' has context argument, but no context was provided when invoking.\n\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-15T17:54:18Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15859",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 2
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uYmkL",
+    "number": 15862,
+    "title": "Enable external URL navigation from event log messaging",
+    "bodyText": "What's the use case?\nWhen logging messages containing URLs using context.log, would be helpful to enable highlight clicking to navigate to the external URL\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-15T18:43:05Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15862",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 3
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uYraM",
+    "number": 15863,
+    "title": "Airbyte config-as-code asset loading broken from 1.4.3 onwards",
+    "bodyText": "Dagster version\n1.4.3-1.4.5\nWhat's the issue?\nTrying to import config-as-code airbyte assets with load_assets_from_connections fails from version 1.4.3 onwards with the following error message:\ndagster._core.errors.DagsterInvalidDefinitionError: Conflicting versions of resource with key 'airbyte' were provided to different assets. When constructing a job, all resource definitions provided to assets must match by reference equality for a given key.\n\nWhat did you expect to happen?\nMy airbyte assets will continue to load successfully as they do in previous versions\nHow to reproduce?\nDefine Airbyte connections with the dagster_airbyte library and the managed module, and try to load those connections as assets with load_assets_from_connections with a shared AirbyteResource\nDeployment type\nDagster Cloud\nDeployment details\nServerless\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-15T18:59:30Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15863",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 2
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uYwev",
+    "number": 15864,
+    "title": "Type error when passing `Nothing` as `dagster_type`",
+    "bodyText": "from dagster import asset, AssetIn, Nothing\n\n@asset(ins={\"foo\": AssetIn(dagster_type=Nothing)})  # type error\ndef bar():\n    return 1\n\nBut it executes OK. This is due to some kind of conflict between Nothing and the internally used NoValueSentinel.",
+    "state": "OPEN",
+    "createdAt": "2023-08-15T19:15:12Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15864",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uadox",
+    "number": 15872,
+    "title": "Support state selection natively in the Dagster framework",
+    "bodyText": "What's the use case?\ndbt has the concept of state, which allows for selection of dbt nodes based on whether the node is new or modified.\nSome use cases:\n\nstate:new: I can select all new models and run a dbt command on them\nstate:modified: I can select all new models, and any models with changes and run a dbt command on them.\nstate:modified.XXX: I can select all new models, and any models with a subset of the state:modified criteria (e.g. modified.body, modified.config, etc).\nWhen making a pull request, I can run only the modified data assets and their downstream dependencies in staging schema (e.g. dbt build --select state:modified+1)\nAfter merging a pull request, I can run only the modified data assets and their downstream dependencies in the production schema using a custom command (e.g. dbt build --select state:modified+ --full-refresh)\n\nTo use this in dbt, a reference to the previous manifest file must be given. In Dagster, we should be able to determine whether a given asset is modified or new, using its history from the asset catalog along with its current code version.\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-16T03:07:02Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15872",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        },
+        {
+          "name": "area: metadata",
+          "description": "Related to metadata"
+        },
+        {
+          "name": "area: asset",
+          "description": "Related to Software-Defined Assets"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 1
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uce69",
+    "number": 15874,
+    "title": "Very inefficient execution of assets upstream from partitioned assets.",
+    "bodyText": "What's the use case?\nI tried to define a job to update the upstream of a partitioned asset, but this resulted in dozens of materializations of each upstream asset.\nConsider this example code:\nfrom dagster import asset, StaticPartitionsDefinition, DefaultScheduleStatus, define_asset_job, ScheduleDefinition, AssetSelection\nimport pandas as pd \n\n@asset\ndef my_very_big_asset()->pd.DataFrame:\n    data = pd.read_sql('SELECT * FROM veryBigTable')\n    return data # Very big\n\nmy_partitions = StaticPartitionsDefinition(['A','B','C','D',...,'Z'])\n\n@asset(partitions_def=my_partitions)\ndef my_partitioned_asset(my_very_big_asset)->pd.DataFrame:\n    ...\n\nupdate_my_partitioned_asset_job = define_asset_job(\"update_my_partitioned_asset\", AssetSelection.key('my_partitioned_asset').upstream())\nupdate_my_partitioned_asset_schedule = ScheduleDefinition(job=update_my_partitioned_asset_job, cron_schedule=\"0 5 * * *\", default_status=DefaultScheduleStatus.RUNNING)\nFrom the logs it appears that my_very_big_asset is getting matterialized 26 times (once for each partition of my_partitions)\nIdeas of implementation\nThe dagster scheduler should \"figure out\" that my_very_big_asset can be matiralized only once and then consumed 26 times by the partitioned downstream pipeline.\nAdditional information\nThis should also apply to AutoMaterializations of partitioned assets.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-16T10:33:09Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15874",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5ufKDa",
+    "number": 15882,
+    "title": "Documentation gap for `poll_interval_seconds`.",
+    "bodyText": "What's the issue or suggestion?\nSee: https://dagster.slack.com/archives/C01U5LFUZJS/p1692185371057639\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-16T17:42:42Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15882",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 1
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uf184",
+    "number": 15886,
+    "title": "in observable source assets, enable indicating new partition has arrived, without specifying data version",
+    "bodyText": "Here's some code that a user might write for an observable partitioned source asset:\nimport os\nfrom dagster import (\n    DataVersionsByPartition,\n    observable_source_asset,\n    DailyPartitionsDefinition,\n    EventRecordsFilter,\n    DagsterEventType,\n)\n\n\ndaily_partitions_def = DailyPartitionsDefinition(start_date=\"2023-08-01\")\n\n\n@observable_source_asset(partitions_def=daily_partitions_def)\ndef foo_source_asset(context):\n    # fetch the previous partition observed by this function to determine what partition we're\n    # waiting for next\n    prior_observations = context.instance.get_event_records(\n        EventRecordsFilter(\n            event_type=DagsterEventType.ASSET_OBSERVATION,\n            asset_key=\"foo_source_asset\",\n        ),\n        limit=1,\n    )\n\n    if prior_observations:\n        prev_partition_key = prior_observations[-1].partition_key\n        next_partition_key = daily_partitions_def.get_next_partition_key(prev_partition_key)\n    else:\n        next_partition_key = daily_partitions_def.get_first_partition_key()\n\n    if next_partition_key and os.path.isfile(f\"some_directory/{next_partition_key}\"):\n        return DataVersionsByPartition({next_partition_key: \"1\"})\nIt's kinda weird that they need to specify a data version.",
+    "state": "OPEN",
+    "createdAt": "2023-08-16T20:10:35Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15886",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uhiU6",
+    "number": 15888,
+    "title": "partitioned observable source assets show up weird in the UI",
+    "bodyText": "Suppose you have a partitioned observable source asset like this:\nfrom dagster import observable_source_asset, DailyPartitionsDefinition\n\n@observable_source_asset(partitions_def=DailyPartitionsDefinition(start_date=\"2023-08-08\"))\ndef asset1():\n    ...\nThe asset graph shows that all the partitions are missing even if you observe all of them.  And same with the asset details page.  We also use words like \"materialized\".\nThe long term solution for this will be to show the number of observed partitions.  This requires some backend work though which might not happen in the near term.\nFor the short term, we could just hide the partitions stuff that doesn't work.  E.g. hide the partitions tab on the asset details page and the per-partition counts on the asset graph.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-17T05:36:49Z",
+    "closedAt": "2023-08-30T15:42:29Z",
+    "url": "https://github.com/dagster-io/dagster/issues/15888",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uivtQ",
+    "number": 15890,
+    "title": "Confusing concepts",
+    "bodyText": "What's the issue or suggestion?\nOver-engineer architecture design makes confusing how to encompass our requirements with your library. Please write a clear documentation 0-100.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-17T09:20:45Z",
+    "closedAt": "2023-08-18T20:57:43Z",
+    "url": "https://github.com/dagster-io/dagster/issues/15890",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5umpT6",
+    "number": 15909,
+    "title": "Enhancements for LaunchPad with Different Materialization Strategies",
+    "bodyText": "What's the use case?\nWe recently encountered challenges during our production data asset releases, specifically around handling validation errors in our pipeline. To address these issues, we had to modify the configuration values using the LaunchPad. However, we faced difficulties when trying to override the validations. Due to Dagster\u2019s current limitations in supporting materialization from failure with a modified LaunchPad, we resorted to manually selecting a subset of assets (70 out of 208). This approach was not only cumbersome but also error-prone. We often found ourselves retracing steps after minor missteps, which added complexity to the process.\nIdeas of implementation\nEnhanced LaunchPad Integration: Allow LaunchPad to support non-default materialization options: \"materialize from failure\", \"materialize from selected\", \"materialize same steps\", and more. This would offer flexibility in managing and recovering data assets, especially in larger pipelines.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-17T19:59:43Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15909",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "UI/UX",
+          "description": "Related to UI/UX"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5umr_V",
+    "number": 15911,
+    "title": "Support dbt style `--defer` natively in the Dagster framework",
+    "bodyText": "What's the use case?\nFrom dbt's docs:\n\nDefer is a powerful feature that makes it possible to run a subset of models or tests in a sandbox environment without having to first build their upstream parents. This can save time and computational resources when you want to test a small number of models in a large project.\n\nWith Dagster's asset graph, can we generalize this feature to support a data sandbox for any data asset. This will essentially supercharge our existing capabilities with Dagster Cloud Branch Deployments.\nIdeas of implementation\nFrom https://dagster.io/blog/dagster-master-plan:\n\nWe can build a \u201cforkable\u201d version of the asset graph (like \u201cgit branch\u201d for data assets). When combined with Dagster's branch deployments and branchable storage layers like Snowflake\u2019s zero-copy clones or LakeFS, this will allow data engineers to create \"copy on write\" staging environments for every pull request that read from production and write to staging. This will massively improve developer velocity, especially for ML model development\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-17T20:07:41Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15911",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        },
+        {
+          "name": "area: asset",
+          "description": "Related to Software-Defined Assets"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5umvdd",
+    "number": 15913,
+    "title": "Support dbt docs natively with Dagster",
+    "bodyText": "What's the use case?\nHow do we accommodate dbt users who are using their project's static dbt docs site?\nIdeas of implementation\nOption 1:\n\nUpload a static site on Dagster Cloud, taking advantage of Supercharging dbt docs\nGenerate links to it from the asset metadata\n\nOption 2:\n\nSupport dbt docs + metadata natively in the Dagster asset graph\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-17T20:20:04Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15913",
+    "labels": {
+      "nodes": [
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        },
+        {
+          "name": "area: metadata",
+          "description": "Related to metadata"
+        },
+        {
+          "name": "area: asset",
+          "description": "Related to Software-Defined Assets"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 4
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5um4xd",
+    "number": 15914,
+    "title": "raise error when `DataVersionsByPartition` includes partition that's not part of the `PartitionsDefinition`",
+    "bodyText": "This should be an error:\n@observable_source_asset(\n    partitions_def=DailyPartitionsDefinition(start_date=\"2023-07-29\")\n)\ndef asset1():\n    result = DataVersionsByPartition({\"2023-01-02\": \"x\"})\n    return result",
+    "state": "OPEN",
+    "createdAt": "2023-08-17T20:47:07Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15914",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: partition",
+          "description": "Related to Partitions"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uoEMz",
+    "number": 15922,
+    "title": "Enhanced Failure Management: Mid-Run Asset Restart or Forking with State Preservation",
+    "bodyText": "What's the use case?\nWe're currently managing complex pipelines involving multiple threads of assets running in parallel, specifically threads A and B as an example. We've encountered challenges when an asset in thread A fails to materialize early in its process. With the current Dagster UI, our options are limited:\n\nWait for thread B to complete: This isn't ideal as it defeats the purpose of having a parallelized DAG.\nLaunch a separate run for thread A: This approach creates two distinct runs which complicates the management, especially when these threads merge downstream. The manual coordination required goes against the intended benefits of using a DAG.\n\nIdeas of implementation\n\nAsset Restart During Run: Introduce a feature allowing users to restart a failed asset in the middle of a run. This ensures that if an asset in a parallel thread fails, it can be immediately addressed without waiting for other threads or initiating a new run.\nFork & Preserve State: Enable a mechanism to fork a new run from an existing run while preserving the ongoing state of other threads. This would allow us to manage failures in one thread without disturbing or restarting the entirety of other threads.\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-18T03:37:51Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15922",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uqiFn",
+    "number": 15923,
+    "title": "Change `end_offset` type to `timedelta` in `TimeWindowPartitionsDefinition`",
+    "bodyText": "What's the use case?\nMy concrete usecase is to materialize daily partitions with a 5 day delay. This use case is supported in theory, but unusable in practice due to the slow path in _get_last_partition_window (\n  \n    \n      dagster/python_modules/dagster/dagster/_core/definitions/time_window_partitions.py\n    \n    \n         Line 478\n      in\n      9660abf\n    \n  \n  \n    \n\n        \n          \n           # TODO: make this efficient \n        \n    \n  \n\n.)\nInstead of trying to fix the slow path, I would like to suggest making end_offset more flexible and clearer.\nIdeas of implementation\nI suggest that end_offset should become a timedelta and shift both:\n\ntime when time window partitions start existing\ntime when time window partitions are scheduling\n\nThe docstring could read as follows:\nend_offset (timedelta): Shifts the schedule by the indicated offset. E.g. if\n    schedule_offset is timedelta(hours=1) then partitions will be materialized 1 hour past\n    the end of the time window.\n\nThe implementation would consist of three major parts:\n\nreplacing current_time with current_time - end_offset in various methods of TimeWindowPartitionsDefinition.\nimplementing \"shifted\" scheduler\nfinding the best way to transition from int to timedelta.\n\nThe first part should be simple, and the resulting implementation would be a simplification from the current one.\nThe second part may be tricky, I have not looked at it yet. From a first glance, shifting a cron based schedule should be straightforward except for the directives like */15.\nFor the third part there are several options how to approach it, but I don't know which one would be better.\nAdditional information\nIf you think this is worthwhile, I could contribute the implementation.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-18T12:29:25Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15923",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5urltn",
+    "number": 15929,
+    "title": "Inconsistent behavior with clicking view for single run and backfill",
+    "bodyText": "See: https://dagster.slack.com/archives/C01U5LFUZJS/p1692293513671889\ncc @hellendag",
+    "state": "CLOSED",
+    "createdAt": "2023-08-18T15:34:41Z",
+    "closedAt": "2023-08-22T14:07:03Z",
+    "url": "https://github.com/dagster-io/dagster/issues/15929",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5usCOq",
+    "number": 15936,
+    "title": "build_schedule_from_dbt_selection() doesn't filter based on provided assets",
+    "bodyText": "Dagster version\ndagster, version 1.4.5\nWhat's the issue?\nWhen we use the function build_schedule_from_dbt_selection() the provided dbt_assets=[] have no impact on the list of assets that will be in the schedule. It load all the available assets in the manifest.\nWhat did you expect to happen?\nI expect that the assets loaded with @dbt_asset decorator and provided to the function would be the only one that would get select even if the default configuration for dbt_select is dbt_select: str = \"fqn:*\".\nFor example if we take this code\n@dbt_assets(\n    manifest=dbt_manifest_path,\n    select=\"a b\",\n)\ndef a_b_dbt_assets(context: OpExecutionContext, dbt: DbtCliResource):\n    yield from dbt.cli([\"build\"], context=context).stream()\n\n@dbt_assets(\n    manifest=dbt_manifest_path,\n    select=\"c\",\n)\ndef c_dbt_assets(context: OpExecutionContext, dbt: DbtCliResource):\n    yield from dbt.cli([\"build\"], context=context).stream()\n\ndbt_c_schedule = build_schedule_from_dbt_selection(\n    dbt_assets=[c_dbt_assets],\n    job_name=\"should_only_run_c_dbt_model_job\",\n    cron_schedule=\"0 * * * *\",\n)\nI would except that dbt_c_schedule create a schedule only for the dbt model c since I provided a list of prefiltered models to the build_schedule_from_dbt_selection() function and the dbt_select: str = \"fqn:*\" should be applied to the filtered set of models.\nHow to reproduce?\n@dbt_assets(\n    manifest=dbt_manifest_path,\n    select=\"tag:hourly\",\n)\ndef hourly_dbt_assets(context: OpExecutionContext, dbt: DbtCliResource):\n    yield from dbt.cli([\"build\"], context=context).stream()\n\n\n@dbt_assets(\n    manifest=dbt_manifest_path,\n    select=\"tag:daily\",\n)\ndef daily_dbt_assets(context: OpExecutionContext, dbt: DbtCliResource):\n    yield from dbt.cli([\"build\"], context=context).stream()\n\ndbt_daily_schedule = build_schedule_from_dbt_selection(\n    dbt_assets=[daily_dbt_assets],\n    job_name=\"dbt_daily_job\",\n    cron_schedule=\"0 * * * *\", \n)\n\ndbt_hourly_schedule = build_schedule_from_dbt_selection(\n    dbt_assets=[hourly_dbt_assets],\n    job_name=\"dbt_hourly_job\",\n    cron_schedule=\"0 * * * *\",\n)\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-18T17:14:29Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15936",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        },
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5usPxW",
+    "number": 15937,
+    "title": "[DB IO managers] support setting a schema via config and an asset key prefix ",
+    "bodyText": "What's the use case?\nSome users want to use a DB IO manager and set the schema via config, and they also want to use asset key prefixes to organize their assets. At this time, this results in an error since the DB IO managers also pull the schema from the key_prefix and if a key_prefix and the config for schema is set we error.\nWe should support the ability to set the schema via config AND a key_prefix on as asset. The key_prefix on the asset would be ignored\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-18T18:02:27Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15937",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "area: io-manager",
+          "description": "Related to I/O Managers"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5us0I7",
+    "number": 15943,
+    "title": "Custom StepLauncher can't be used as a ConfigurableResource",
+    "bodyText": "Dagster version\nv1.4.7\nWhat's the issue?\nIt appears that passing a custom step launcher as a ConfigurableResource does not currently work. This prevents any jobs that use a custom step launcher from leveraging ConfigurableResources.\nWhat did you expect to happen?\nI was hoping that I could create a StepLauncher which subclasses from both StepLauncher and ConfigurableResource, then pass it into an op the same way ConfigurableResources are usually passed, avoiding the context and required_resource_keys. While working through it I realized that this would still be a bit clunky, as the step launcher resource wouldn't actually be used by the op. So it feels like maybe a different means by which to pass the step launcher / associate it with an op might be necessary - maybe as part of the @op arguments? Like\n@op(step_launcher=CustomStepLauncher)\ndef custom_step_launcher_op():\n  pass\n\nalthough you'd still need to be able to allow for configuring the step launcher at run time\nHow to reproduce?\nRunning the following code does not trigger the sleep() call made within NewStepLauncher.launch_step()\nfrom time import sleep\nfrom dagster import ConfigurableResource, StepLauncher, job, op\n\n\nclass NewStepLauncher(StepLauncher, ConfigurableResource):\n    def launch_step(self, step_context):\n        step_context.log.info(\"Launching step from custom StepLauncher\")\n        sleep(10)\n\n\n@op()\ndef my_custom_step(context, step_launcher: NewStepLauncher):\n    pass\n\n\n@job(resource_defs={\"step_launcher\": NewStepLauncher})\ndef my_custom_job():\n    my_custom_step()\n\nDeployment type\nDagster Cloud\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-18T20:14:27Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15943",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        },
+        {
+          "name": "area: resource",
+          "description": "Related to Resources"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uulMn",
+    "number": 15945,
+    "title": "``op_tags`` not being added to partitioned asset runs",
+    "bodyText": "Dagster version\n1.4.7\nWhat's the issue?\nWhen adding op_tags to a partitioned asset with an AutoMaterializePolicy, like the next example:\n@asset(\n    deps=[create_partitions],\n    partitions_def=symbols_partitions_def,\n    auto_materialize_policy=AutoMaterializePolicy.eager(\n        max_materializations_per_minute=10000\n    ),\n    op_tags={\"2_run_per_value\": \"firstrate_forex_prices\"},\n)\ndef load_symbol(context) -> None:\n    context.log.info(f\"Loading data for: {context.partition_key}\")\nThe op_tags are not being added to the Runs generated,\nWhat did you expect to happen?\nI would expect that the tags set in op_tags where attached to each partition Run of the asset.\nBefore dagster 1.4, instead of using AutoMaterializePolicy I was using a build_asset_reconciliation_sensor, like the next one:\nsensor= build_asset_reconciliation_sensor(\n    name=\"load_symbol_sensor\",\n    asset_selection=AssetSelection.assets(load_symbol),\n    run_tags={\"2_run_per_value\": \"load_symbol\"},\n)\nAnd the run_tags were correctly attached to each partition Run generated by the sensor. But now, without the build_asset_reconciliation_sensor I don't know hoe to do it.\nThank you so much in advance for your help.\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-19T13:02:14Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15945",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5uwLb1",
+    "number": 15947,
+    "title": "Child Process Crash Exception when deploy on docker container ",
+    "bodyText": "Dagster version\n1.2.6\nWhat's the issue?\nHi Guys ,\nI developed a data pipeline and it was working fine one local device until I deployed it on Docker .\nI started getting the below error on specific ops :\n`dagster._core.executor.child_process_executor.ChildProcessCrashException\nStack Trace:\nFile \"/usr/local/lib/python3.8/site-packages/dagster/_core/executor/multiprocess.py\", line 249, in execute\nevent_or_none = next(step_iter)\n,  File \"/usr/local/lib/python3.8/site-packages/dagster/_core/executor/multiprocess.py\", line 359, in execute_step_out_of_process\nfor ret in execute_child_process_command(multiproc_ctx, command):\n,  File \"/usr/local/lib/python3.8/site-packages/dagster/_core/executor/child_process_executor.py\", line 174, in execute_child_process_command\nraise ChildProcessCrashException(exit_code=process.exitcode)`\nI used job that uses ops  , it was working very fine on my device , please be aware that the dagster app hade 12 GB Ram to consume but .\nWhat did you expect to happen?\nTo work very fine .\nHow to reproduce?\nNo response\nDeployment type\nDocker Compose\nDeployment details\ndagster.yaml file\ntelemetry :  enabled :  run_retries: enabled: true max_retries: 3 storage: mysql: mysql_db: username: dagster password: dagster123 hostname: 172.21.0.1 db_name: db port: 3306\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-20T13:22:01Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15947",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u0rpx",
+    "number": 15953,
+    "title": "[Errno 28] inotify watch limit reached",
+    "bodyText": "Dagster version\ndagster, version 1.4.5\nWhat's the issue?\nOperation name: PipelineRunLogsSubscription\nMessage: [Errno 28] inotify watch limit reached\nPath:\nLocations:\n\nWhat did you expect to happen?\nnormal run.\nHow to reproduce?\na practice copy from 'https://www.youtube.com/watch?v=UrjHVJ2GZN0'\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T12:49:11Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15953",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u2AUP",
+    "number": 15962,
+    "title": "[docs] improve single run backfills example",
+    "bodyText": "What's the use case?\nthis example https://docs.dagster.io/concepts/partitions-schedules-sensors/backfills#single-run-backfills is pretty confusing for the following reasons:\n\nuse of pseudocode methods read_data_in_datetime_range, compute_events_from_raw_events, and overwrite_data_in_datetime_range hide what the user should be doing in the asset\nNone of the context methods in the descriptive text are PyObjects, so you can't click into the API docs to see what they do\n\nOther areas for improvements:\n\nshowing a mapping of \"replace X context method with Y context method\"\ncover how to do single run backfills for static and dynamic partitions\n\nFrom this slack thread: https://dagster.slack.com/archives/C01U954MEER/p1692626308940179\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T15:37:30Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15962",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 1
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u3M37",
+    "number": 15972,
+    "title": "Assets wrapping some ops made by integration libraries have `start_after` asset upstream, with no way to remove it",
+    "bodyText": "What's the use case?\nsome of our op-creator helper methods have a start_after Nothing input so that you can order these ops in your job. However, if you make assets from the ops, you end up with a start_after asset at the top of the asset graph. For example\na_databricks_asset = AssetsDefinition.from_op(create_databricks_run_now_op(...))\nanother_databricks_asset = AssetsDefinition.from_op(create_databricks_run_now_op(...))\n...\nwould end up like this\n\nYou can get hacky and get rid of this start_after asset by doing\na_databricks_asset._input_defs = []\nbut that's not something we should be recommending to users.\na_databricks_asset.with_replaced_properties(ins=None) doesn't work because it will use the instance ins over the passed None\nIt's unclear to me if this is something we really should fix, or if we should instead have asset-first versions of the relevant integrations\nhttps://dagster.slack.com/archives/C01U954MEER/p1692642828186269\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T19:03:44Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15972",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u3beK",
+    "number": 15975,
+    "title": "[dagster-bigquery] support native BigQuery partitions",
+    "bodyText": "What's the use case?\nBigQuery has a partitioned table concept, we should support this in our I/O manager\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T19:41:47Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15975",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 2
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u3xcp",
+    "number": 15980,
+    "title": "Error reading Azure Compute Logs using ManagedIdentity",
+    "bodyText": "Dagster version\n1.4.2\nWhat's the issue?\nAttempting to use Azure Storage to persist compute logs, using ManagedIdentity to authorize with Storage account, as opposed to access key (testing and working fine with access key, just dont want access keys enabled in production).\nI can see logs being written correctly to Storage:\n\nHowever when viewing previous stdout job logs, GraphQL errors occur:\nOperation name: CapturedLogsMetadataQuery\n\nMessage: 'DefaultAzureCredential' object has no attribute 'account_key'\n\nPath: [\"capturedLogsMetadata\"]\n\nLocations: [{\"line\":2,\"column\":3}]\n\nStack Trace:\n  File \"/project/.meltano/utilities/dagster/venv/lib/python3.9/site-packages/graphql/execution/execute.py\", line 521, in execute_field\n    result = resolve_fn(source, info, **args)\n  File \"/project/.meltano/utilities/dagster/venv/lib/python3.9/site-packages/dagster_graphql/schema/roots/query.py\", line 967, in resolve_capturedLogsMetadata\n    return get_captured_log_metadata(graphene_info, logKey)\n  File \"/project/.meltano/utilities/dagster/venv/lib/python3.9/site-packages/dagster_graphql/implementation/fetch_logs.py\", line 19, in get_captured_log_metadata\n    metadata = graphene_info.context.instance.compute_log_manager.get_log_metadata(log_key)\n  File \"/project/.meltano/utilities/dagster/venv/lib/python3.9/site-packages/dagster/_core/storage/cloud_storage_compute_log_manager.py\", line 156, in get_log_metadata\n    stdout_download_url=self.download_url_for_type(log_key, ComputeIOType.STDOUT),\n  File \"/project/.meltano/utilities/dagster/venv/lib/python3.9/site-packages/dagster_azure/blob/compute_log_manager.py\", line 209, in download_url_for_type\n    account_key=self._blob_client.credential.account_key,\n\nIn dagster-azure utils.py there is some special casing around access to credential.account_key, possibly to address this case.\n\n  \n    \n      dagster/python_modules/libraries/dagster-azure/dagster_azure/blob/utils.py\n    \n    \n         Line 26\n      in\n      da23cb0\n    \n  \n  \n    \n\n        \n          \n           if hasattr(credential, \"account_key\"): \n        \n    \n  \n\n\nbut the same approach is not taken here when :\n\n  \n    \n      dagster/python_modules/libraries/dagster-azure/dagster_azure/blob/compute_log_manager.py\n    \n    \n         Line 209\n      in\n      da23cb0\n    \n  \n  \n    \n\n        \n          \n           account_key=self._blob_client.credential.account_key, \n        \n    \n  \n\n\nMy dagster.yaml\ncompute_logs:\n  module: dagster_azure.blob.compute_log_manager\n  class: AzureBlobComputeLogManager\n  config:\n    storage_account:\n      env: DAGSTER_COMPUTE_LOG_STORAGE_ACCOUNT_NAME\n    container:\n      env: DAGSTER_COMPUTE_LOG_STORAGE_CONTAINER_NAME\n    default_azure_credential:\n      exclude_environment_credential: true\n\nMy container app has been assigned Storage Blob Data Contributor to give it read write delete permissions.\nWhat did you expect to happen?\nLogs to be retrieved from storage correctly.\nHow to reproduce?\nNo response\nDeployment type\nOther Docker-based deployment\nDeployment details\nAzure Container App deployment\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T20:39:53Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15980",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u33pc",
+    "number": 15982,
+    "title": "Allow for job retry if job with assigned run_key fails",
+    "bodyText": "What's the use case?\nI am trying to use a sensor to monitor an SQS queue and kick off jobs based on the content of those messages.  One the the fields that comes in through the message is a batch_id which I'm setting equal to my run_key in my RunRequest.\nThe problem is that if the run for that run_key fails, I don't currently have a mechanism to retry the job for that batch without first deleted the run associated with the run_key and then retrying the job.\nIdeas of implementation\nIt would be great if I could pass a flag into my run request that would indicate if retries for a run_key are allowed if they fail. In this case, when the sensor fires again, it would evaluate the run key and determine if the the job failed and if it did, the kick off a new run.\nIn cases where a job is still running, the sensor would simply respond with \"run_key is currently being processed\" or something similar.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T20:58:26Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15982",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 1
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u4QVR",
+    "number": 15991,
+    "title": "Utilise snowpark for IO Managers",
+    "bodyText": "What's the use case?\nSnowpark is now stable for public usage and seems to be the preferred approach for interacting with snowflake from python. Not only does it allow for complex queries to be composed without the need to manually compose complex SQL queries, but it also offers some performance benefits (based entirely off my non-quantitative experience!)\nI think there are a few potential wins here:\nSnowpark dataframes can either be converted to pandas dataframes (providing parity with current behaviour albeit a fair bit faster), or operated on directly. When used directly, you effectively get a Lazyframe which can be operated on in various ways, and fed back to the IO manager to be written to a new table. None of this requires the data leave snowflake.\nWe've had calculations where the operation itself is trivial, but requires huge amounts of data to perform. For these sort of operations, you can knock an order of magnitude off the total materialisation time as you aren't waiting on data transfer and dagster can leverage extremely minimal compute resources for this.\nThe pythonic API for composing operations on tables is also a lot more readable than manually composing SQL commands. For something like \"Fetch the data in this table relating to a given range of time partitions\" the query would look something like:\ntable = session.table(asset_name)\n\ntarget_range = table.filter(table[partition_col].between(partition_start, partition_end))\n\nif as_pandas:\n    return target_range.to_pandas()\nreturn target_range\n\nPseudo-code, but hopefully shows that it is a bit more readable than needing to slowly build up a SQL string as is needed in the IO manager at the moment.\nIdeas of implementation\nA new IO manager which uses snowpark rather than the snowflake-connector directly would be ideal. The session object used at the root of most workflows is analogous to the SnowflakeConnection used to directly execute custom queries.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T22:09:26Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15991",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u4QpV",
+    "number": 15992,
+    "title": "Add json schema for Dagster configuration files",
+    "bodyText": "What's the use case?\nFor Dagster configuration, like:\n\n[tool.dagster]: https://docs.dagster.io/concepts/code-locations#local-development\ndagster_cloud.yaml: https://docs.dagster.io/dagster-cloud/managing-deployments/dagster-cloud-yaml\ndagster.yaml: https://docs.dagster.io/deployment/dagster-instance#dagster-instance\n\nWe should add JSON schema for these fields/files and host them in schemastore so that code editors can automatically retrieve typeaheads when a user is configuring these files.\nIdeas of implementation\n\nPydantic, then export to jsonschema\nHost schema on schemastore\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-21T22:10:49Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/15992",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "area: deployment",
+          "description": "Related to deploying Dagster"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u5IZ9",
+    "number": 16005,
+    "title": "dagster-dbt throws a DagsterInvarientViolationError \"output does not exist\" when materializing dbt models with multiple versions",
+    "bodyText": "Dagster version\ndagster, version 1.4.7\nWhat's the issue?\nWhen materializing a dbt model with multiple versions (2 versions), I'm met with the following.\ndagster._core.errors.DagsterInvariantViolationError: Core compute for op \"run_dbt_af646_8de02\" returned an output \"v1\" that does not exist. The available outputs are ['v2']\n\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/execution/plan/execute_plan.py\", line 273, in dagster_event_sequence_for_step\n    for step_event in check.generator(step_events):\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/execution/plan/execute_step.py\", line 406, in core_dagster_event_sequence_for_step\n    for user_event in check.generator(\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/execution/plan/execute_step.py\", line 100, in _step_output_error_checked_user_event_sequence\n    raise DagsterInvariantViolationError(\n\nWhat did you expect to happen?\nI expected both versions to get materialized without an error.\nHow to reproduce?\nMake a simple dbt model with a version as described in their docs\nLoad the assets using load_assets_from_dbt_manifest or the @dbt_assets decorator.\nTry and materialize via dagit.\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nWhen using the @dbt_assets decorator, I get a bit more insight as to what's going on:\nKeyError: 'v2'\n  File \"/venv/lib/python3.10/site-packages/dagster/_grpc/server.py\", line 290, in __init__\n    self._loaded_repositories: Optional[LoadedRepositories] = LoadedRepositories(\n  File \"/venv/lib/python3.10/site-packages/dagster/_grpc/server.py\", line 134, in __init__\n    loadable_targets = get_loadable_targets(\n  File \"/venv/lib/python3.10/site-packages/dagster/_grpc/utils.py\", line 47, in get_loadable_targets\n    else loadable_targets_from_python_module(module_name, working_directory)\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/workspace/autodiscovery.py\", line 35, in loadable_targets_from_python_module\n    module = load_python_module(\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/code_pointer.py\", line 135, in load_python_module\n    return importlib.import_module(module_name)\n  File \"/usr/local/lib/python3.10/importlib/__init__.py\", line 126, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n  File \"<frozen importlib._bootstrap>\", line 1050, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1027, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1006, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 688, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 883, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n  File \"/opt/dagster/app/lakehouse_pipeline/__init__.py\", line 88, in <module>\n    all_assets.extend(load_assets_from_package_module(project))\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/definitions/load_assets_from_modules.py\", line 272, in load_assets_from_package_module\n    ) = assets_from_package_module(package_module)\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/definitions/load_assets_from_modules.py\", line 220, in assets_from_package_module\n    return assets_from_modules(\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/definitions/load_assets_from_modules.py\", line 62, in assets_from_modules\n    for module in modules:\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/definitions/load_assets_from_modules.py\", line 337, in _find_modules_in_package\n    yield from _find_modules_in_package(submodule)\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/definitions/load_assets_from_modules.py\", line 335, in _find_modules_in_package\n    submodule = import_module(f\"{package_module.__name__}.{modname}\")\n  File \"/usr/local/lib/python3.10/importlib/__init__.py\", line 126, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n  File \"<frozen importlib._bootstrap>\", line 1050, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1027, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1006, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 688, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 883, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n  File \"<path_to_file>/assets.py\", line 21, in <module>\n    def silver_assets(context: OpExecutionContext, dbt: DbtCliResource):\n  File \"/venv/lib/python3.10/site-packages/dagster_dbt/asset_decorator.py\", line 248, in inner\n    asset_definition = multi_asset(\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/definitions/decorators/asset_decorator.py\", line 621, in inner\n    group_names_by_key = {\n  File \"/venv/lib/python3.10/site-packages/dagster/_core/definitions/decorators/asset_decorator.py\", line 622, in <dictcomp>\n    keys_by_output_name[output_name]: out.group_name\n\nI was able to get around this for now by adding a custom dbt translator with a get_asset_key like\ndef get_asset_key(self, dbt_resource_props: Mapping[str, Any]) -> AssetKey:\n    base_key: AssetKey = super().get_asset_key(\n        dbt_resource_props=dbt_resource_props\n    )\n    version = dbt_resource_props.get(\"version\")\n    if not version:\n        return base_key\n    else:\n        # version should be the last element in the unique_id\n        path = base_key.path\n        path[-1] = f\"{path[-1]}_v{version}\"\n        return AssetKey(path)\ntacking on a _v{version_number} to the asset name.\nI'm not certain on the best way to proceed when materializing dbt models that make use of model versioning.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-22T03:13:25Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16005",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        },
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 2
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u97qU",
+    "number": 16012,
+    "title": "Asset-focused replacement for `create_databricks_run_now_op`",
+    "bodyText": "E.g. create_databricks_run_now_asset",
+    "state": "OPEN",
+    "createdAt": "2023-08-22T15:40:13Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16012",
+    "labels": {
+      "nodes": [
+        {
+          "name": "integration: databricks",
+          "description": "Related to dagster-databricks"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u-AsX",
+    "number": 16013,
+    "title": "Preferred executor with Computing cluster (Dask)",
+    "bodyText": "What's the use case?\nWe have computation tasks which we execute by using dask. The best approach that I understood from blogs and documentation is to define the cluster as a resource and use in the assets.\nWith the above tasks, dagster-dask as an executor seems not to be an option. What kind of executor is then generally used in such scenario?\nWhat is the reason a dask cluster cannot be used for both as executor and for parallelising the computation in a task?\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-22T15:52:56Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16013",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5u-FAL",
+    "number": 16015,
+    "title": "How do I create an job with one asset and its dependencies(upstream) ?",
+    "bodyText": "What's the issue or suggestion?\nThe docs is too simple : https://docs.dagster.io/concepts/assets/software-defined-assets#building-jobs-that-materialize-assets\nIt only shows I can provide a list of assets to a job.\nBut that is very inconvenient, could you provide an example to docs to teach us how to just provide one asset to job, and this job would run that asset and all its dependencies(upstream) ?\nAdditional information\ncurrent:\nstock_feature_job = define_asset_job(name=\"stock_feature_job\", selection=\"stock_feature\")\n\n\nAnd lanchpad doesn't show the config parameters in its upstream\n\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-22T16:04:07Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16015",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vAKL5",
+    "number": 16023,
+    "title": "Emphasize in docs that defining custom PartitionMappings is unsupported",
+    "bodyText": "What's the issue or suggestion?\nWe mentioned this in our PartitionMapping apidocs, but not in the PartitionMapping section of the partitions page.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-22T23:04:00Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16023",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vAje1",
+    "number": 16024,
+    "title": "config doesn't show in launchpad ",
+    "bodyText": "What's the issue or suggestion?\nI follow example : https://docs.dagster.io/concepts/configuration/config-schema#using-software-defined-assets\nDefine config:\nfrom typing import Union, List\nfrom dagster import (\n    Config,\n)\n\nclass ReadStockConfig(Config):\n    symbols: Union[List[str], None]\n\nclass ReadEtfConfig(Config): \n    symbols: Union[List[str], None]\nDefine assets:\nfrom .assets_config import ReadEtfConfig, ReadStockConfig\n\n@asset\ndef stock_df(config: ReadStockConfig)->pd.DataFrame:\n    return TushareRouter['stock_a'].read(config.symbols)\n\n@asset\ndef adj_factor(config: ReadStockConfig)->pd.DataFrame:\n    df = TushareDateRouter['adj_factor'].read()\n    if config.symbols:\n        df = df.loc[lambda df:df.ts_code.isin(config.symbols)]\n    return df\n\n@asset\ndef etf_df(config: ReadEtfConfig)->pd.DataFrame:\n    return TushareRouter['etf'].read(config.symbols)\nAccoding to https://docs.dagster.io/concepts/configuration/config-schema#specifying-runtime-configuration , tab[Dagster UI]\nThe example picture doesn't match above examples\nI go to launchpad, but nothing show\n\nI view this pages several times and can't figure out. A full scope example is needed.\nPS: I have a config for many assets, how can I set it once and work for all assets? Not find such docs too.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T01:41:01Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16024",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vCLoA",
+    "number": 16028,
+    "title": "code smell principle",
+    "bodyText": "Dagster version\n1.4.5\nWhat's the issue?\nWhen defining asset as a function, the name violate python clean code\n@asset def asset_name(): ....\nwhile python clean_code supposed to be:\n@asset def get_asset_name(): ....\nWhat did you expect to happen?\nNo response\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-23T08:34:00Z",
+    "closedAt": "2023-08-23T14:33:50Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16028",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vCgeX",
+    "number": 16029,
+    "title": "dagster daemon / dev cli does not support python-file option",
+    "bodyText": "Dagster version\n1.4.7\nWhat's the issue?\nStarting a dagster dev env from daemon / dev cli with --python-file repository is raising an error.\nWhen no port or socket are specific we receive this error\nclass DagsterGrpcServer:\n    def __init__(\n        self,\n        server_termination_event: threading.Event,\n        dagster_api_servicer: DagsterApiServicer,\n        host=\"localhost\",\n        port: Optional[int] = None,\n        socket: Optional[str] = None,\n        max_workers: Optional[int] = None,\n    ):\n        check.invariant(\n            port is not None if seven.IS_WINDOWS else True,\n            \"You must pass a valid `port` on Windows: `socket` not supported.\",\n        )\n        check.invariant(\n            (port or socket) and not (port and socket),\n            \"You must pass one and only one of `port` or `socket`.\",\n        )\n\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/dagster/__main__.py\", line 3, in <module>\n    main()\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/dagster/_cli/__init__.py\", line 48, in main\n    cli(auto_envvar_prefix=ENV_PREFIX)  # pylint:disable=E1123\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/click/core.py\", line 1130, in __call__\n    return self.main(*args, **kwargs)\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/click/core.py\", line 1055, in main\n    rv = self.invoke(ctx)\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/click/core.py\", line 1657, in invoke\n    return _process_result(sub_ctx.command.invoke(sub_ctx))\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/click/core.py\", line 1657, in invoke\n    return _process_result(sub_ctx.command.invoke(sub_ctx))\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/click/core.py\", line 1404, in invoke\n    return ctx.invoke(self.callback, **ctx.params)\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/click/core.py\", line 760, in invoke\n    return __callback(*args, **kwargs)\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/dagster/_cli/api.py\", line 688, in grpc_command\n    server = DagsterGrpcServer(\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/dagster/_grpc/server.py\", line 947, in __init__\n    check.invariant(\n  File \"/Users/yuvalgrinberg/envs/dagster-landing-service/lib/python3.10/site-packages/dagster/_check/__init__.py\", line 1589, in invariant\n    raise CheckError(f\"Invariant failed. Description: {desc}\")\ndagster._check.CheckError: Invariant failed. Description: You must pass one and only one of `port` or `socket`.\n\nAnd if we try to provide the port, we get the following error:\ndef get_workspace_load_target(kwargs: ClickArgMapping) -> WorkspaceLoadTarget:\n    check.mapping_param(kwargs, \"kwargs\")\n    \n    ...\n    \n    if kwargs.get(\"python_file\"):\n        _check_cli_arguments_none(\n            kwargs,\n            \"module_name\",\n            \"package_name\",\n            \"grpc_host\",\n            \"grpc_port\",\n            \"grpc_socket\",\n        )\n        python_files = kwargs[\"python_file\"]\n\nUsage: python -m dagster._daemon run [OPTIONS]\nTry 'python -m dagster._daemon run --help' for help.\n\nError: Invalid set of CLI arguments for loading repository/job. See --help for details.\n\nWhat did you expect to happen?\nTo be able to run a dagster local env while loading the repository from the --python-file\nHow to reproduce?\ndagster-daemon run --python-file PATH_TO_REPO_FILE  --grpc-port 3000\ndagster-daemon run --python-file PATH_TO_REPO_FILE\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T09:24:28Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16029",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vCjLj",
+    "number": 16030,
+    "title": "AttributeError: 'InputMappingNode' object has no attribute 'shape'",
+    "bodyText": "Dagster version\n1.4.5\nWhat's the issue?\nTraceback (most recent call last): File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_grpc/server.py\", line 290, in __init__ self._loaded_repositories: Optional[LoadedRepositories] = LoadedRepositories( File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_grpc/server.py\", line 134, in __init__ loadable_targets = get_loadable_targets( File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_grpc/utils.py\", line 47, in get_loadable_targets else loadable_targets_from_python_module(module_name, working_directory) File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_core/workspace/autodiscovery.py\", line 35, in loadable_targets_from_python_module module = load_python_module( File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_core/code_pointer.py\", line 135, in load_python_module return importlib.import_module(module_name) File \"/home/seyed/miniconda3/lib/python3.10/importlib/__init__.py\", line 126, in import_module return _bootstrap._gcd_import(name[level:], package, level) File \"<frozen importlib._bootstrap>\", line 1050, in _gcd_import File \"<frozen importlib._bootstrap>\", line 1027, in _find_and_load File \"<frozen importlib._bootstrap>\", line 1006, in _find_and_load_unlocked File \"<frozen importlib._bootstrap>\", line 688, in _load_unlocked File \"<frozen importlib._bootstrap_external>\", line 883, in exec_module File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed File \"/home/seyed/PycharmProjects/step/taffic-data-pipeline/taffic_data_pipeline/__init__.py\", line 4, in <module> from .transformations import get_time_series_data_and_adj File \"/home/seyed/PycharmProjects/step/taffic-data-pipeline/taffic_data_pipeline/transformations.py\", line 54, in <module> def get_x_y(pems_bay: pd.DataFrame): File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_core/definitions/decorators/asset_decorator.py\", line 888, in graph_asset op_graph = graph( File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_core/definitions/decorators/graph_decorator.py\", line 79, in __call__ ) = do_composition( File \"/home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_core/definitions/composition.py\", line 1035, in do_composition output = fn(**kwargs) File \"/home/seyed/PycharmProjects/step/taffic-data-pipeline/taffic_data_pipeline/transformations.py\", line 68, in get_x_y x,y = generate_graph_seq2seq_io_data(pems_bay, x_offsets=x_offsets, y_offsets=y_offsets,add_day_in_week=False, add_time_in_day=True) File \"/home/seyed/PycharmProjects/step/taffic-data-pipeline/taffic_data_pipeline/transformations.py\", line 25, in generate_graph_seq2seq_io_data num_samples, num_nodes = df.shape AttributeError: 'InputMappingNode' object has no attribute 'shape' 2023-08-23 11:21:47 +0200 - dagster.code_server - INFO - Started Dagster code server for module taffic_data_pipeline in process 97848 /home/seyed/miniconda3/lib/python3.10/site-packages/dagster/_core/workspace/context.py:610: UserWarning: Error loading repository location taffic_data_pipeline:AttributeError: 'InputMappingNode' object has no attribute 'shape'\n@graph_asset def get_x_y(pems_bay: pd.DataFrame): \"\"\" x,y = generate_graph_seq2seq_io_data(pems_bay, x_offsets=x_offsets, y_offsets=y_offsets,add_day_in_week=False, add_time_in_day=True)   # raise happens\nWhat did you expect to happen?\nPreserve the asset (pems_bay) attributes as DataFrame Object\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T09:30:41Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16030",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vDzkt",
+    "number": 16031,
+    "title": "[UI] Replace \"_\" with \" \" in group names in the Dag view in Dagit",
+    "bodyText": "What's the use case?\nFairly simple (arguably trivial feature)\nWe use group names like \"Marketing_Feature_Store\" and \"Current_Models\" or \"01_Feature_Engineering\", \"02_Feature_Engineering\", etc...\nOn the Dagit DAG sidebar these appear as:\nMarketing_Feature_Store\nCurrent_Models\n01_Feature_Engineering\n02_Feature_Engineering\nIt'd be nice to have the option to hide the '_' to have this presentation:\nMarketing Feature Store\nCurrent Models\n01 Feature Engineering\n02 Feature Engineering\nIdeas of implementation\nSome Javascript that replaces the '_' with ' ' in the Dagit UI for the group names.\nFor example:\n\nWould become\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T12:48:19Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16031",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vEbw8",
+    "number": 16033,
+    "title": "An option to automaterialize historical time window partitions",
+    "bodyText": "What's the use case?\nI'm creating a daily partitioned asset with a start_date in the past that has self a partition dependency (on previous day). I would like it to auto-materialize starting from the start_date and into the future.\nCurrently this is explicitly not supported - documentation states \"To materialize earlier partition, launch a backfill\". Unfortunately this is problematic.\nIf I create an asset, and launch a backfill, it is possible that by the time backfill is done, there will be extra unmaterialized partitions added. And then auto-materialize scheduler will not trigger any runs.\nI would like to avoid the need to \"babysit\" the backfills to make sure they are all fully materialized up to today. It would be nice to have an option (AutomaterializePolicy.very_eager()) to fill all the time window partitions for me.\nIdeas of implementation\nAdd another AutomaterializePolicy or a flag to an existing one.\nAdditional information\nThis is a related issue: #11833\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T14:17:28Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16033",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "area: auto-materialize",
+          "description": "Related to Auto Materialization"
+        },
+        {
+          "name": "customize-auto-materialize",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vEoLc",
+    "number": 16035,
+    "title": "Validate resource type when using Pythonic resources",
+    "bodyText": "Dagster version\nlatest\nWhat's the issue?\nThe following is valid, when it should not be:\n@dbt_assets(...)\ndef my_dbt_assets(context: OpExecutionContext, dbt: DbtCliResource):\n    yield from dbt.cli([\"run\"], context=context)\n    \ndefs = Definitions(\n    assets=[my_dbt_assets],\n    resources={\n        \"dbt\": NotDbtCliResource(...)\n    },\n)\n\nThe annotation does not match the actual resource passed to the definition. We should not rely on duck typing here.\nWhat did you expect to happen?\nA isinstance check or equivalent for resources passed into ops/assets should occur before execution.\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T14:43:52Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16035",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        },
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        },
+        {
+          "name": "area: resource",
+          "description": "Related to Resources"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vFBo7",
+    "number": 16038,
+    "title": "enable supplying run config to observable source assets",
+    "bodyText": "",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T15:43:30Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16038",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vF0QL",
+    "number": 16046,
+    "title": "dagster-dbt doesn't correctly resolve versioned models",
+    "bodyText": "Dagster version\ndagster, version 1.4.7\nWhat's the issue?\nWhen using versioning, dagster-dbt doesn't correctly resolve selected models, and the code location won't load.\nInvariant failed. Description: The set of asset keys with dependencies specified in the asset_deps argument must equal the set of asset keys produced by this AssetsDefinition. \nasset_deps keys: {AssetKey(['seed', 'dbt', 'silver_seed', 'crop_d_v2']), AssetKey(['seed', 'dbt', 'silver_seed', 'breeding_zone_d_v1']), AssetKey(['seed', 'dbt', 'silver_seed', 'crop_d_v1'])} \n expected keys: {AssetKey(['seed', 'dbt', 'silver_seed', 'crop_d_v2']), AssetKey(['seed', 'dbt', 'silver_seed', 'breeding_zone_d_v1'])}\n\nIn this case, The deps were correct, but the expected_keys dropped the v1 version for some reason.\nWhat did you expect to happen?\nI expected the code location to load with a job that would materialize all the assets under the specified schema.\nHow to reproduce?\nCreate two dbt models. Make one with 2 versions, and have the second version depend, ref, the first. Make another dbt model that depends on the latest version of the first table. Try to load_assets_from_dbt_manifest and you'll get an error where dagster expects less keys than it should.\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nFWIW, if you do a \"poor man's\" versioning and split each of these into separate model files and use the same dagster asset loading code, dagster gets it right.\nThis may also be related to #16005\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-23T18:11:35Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16046",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        },
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 1
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vIWUh",
+    "number": 16064,
+    "title": "Absolute file path as partition key overwrites original file",
+    "bodyText": "Dagster version\ndagster, version 1.4.3\nWhat's the issue?\nI'm exploring the use of dynamic partitions and found that if the absolute path to an input file is used as the partition key, then the original input file will be overwritten by the default IO manager. The issue stems from the way that the output location is computed in the UPathIOManager._get_paths_for_partitions method. The problem is that the final path is computed as\npath = <asset_path> / <partition_key>\nAccording to the Pathlib spec, this will just return the partition key if it is an absolute path.\nThis may be intended behaviour, but is probably at least worth a mention in in the docs to ensure users don't unwittingly overwrite their data. Alternatively, it may be desirable to separate the partition key and input configuration to enable users to more easily supply per-partition configuration.\nWhat did you expect to happen?\nNo response\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-24T05:58:39Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16064",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 2
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vJrgs",
+    "number": 16065,
+    "title": "Dagster-dbt: DBT cli operators do not work for all relative paths",
+    "bodyText": "Versions\nPython 3.9.13\ndagster 1.4.7\ndagster-dbt 0.20.7\ndbt 1.6.0\nReproduce Issue\nSetup dagster in the root of a new repository\nAdd a dbt project using dbt init to the repository root with name test_dbt\nCreate a simple job:\nfrom dagster import job\nfrom dagster_dbt import dbt_build_op, dbt_cli_resource\n\n@job(resource_defs={\"dbt\": dbt_cli_resource})\ndef my_dbt_job() -> None:\n    dbt_build_op()\n\nRun dagster dev in your CLI\nStart the job with configuration:\nresources:\n  dbt:\n    config:\n      bypass_cache: false\n      capture_logs: true\n      dbt_executable: dbt\n      debug: false\n      ignore_handled_error: false\n      json_log_format: true\n      project_dir: test_dbt\n      target_path: target\n      warn_error: false\n\nThe operation will fail because of the following lines:\nhttps://github.com/dagster-io/dagster/blob/5a53770dd0a9fb2527604da937527614e0cc087a/python_modules/libraries/dagster-dbt/dagster_dbt/core/utils.py#L135..L140\nSolution\nThe dbt command used is the following:\ndbt --no-use-colors --log-format json build --project-dir test_dbt\n\nBut due to L140, we change the cwd where the command is being executed.\nAs a result, the paths passed for project-dir is not longer correct.\nCurrently there are two workarounds:\n\nUse absolute paths, which is what I'll be doing because I'm tied to my current repository structure.\nSetup dagster and dbt like it's done in the dagster+dbt tutorial, where dagster is run from folder jaffle_dagster. In the run config you set project_dir to ../test_dbt. The folder you end up looking for the dbt_project.yml file is then the same if you're looking from withing jaffle_dagster or from within test_dbt...\n\nTo solve the problem completely, removing L140 should do the trick.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-24T09:55:11Z",
+    "closedAt": "2023-08-28T19:32:53Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16065",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vLMud",
+    "number": 16068,
+    "title": "Please update DagsterGraphQLClient docs with Dagster Cloud example",
+    "bodyText": "What's the issue or suggestion?\nThe docs on the Python GraphQL client: https://docs.dagster.io/_apidocs/libraries/dagster-graphql#graphql-dagster-graphql do not explain how to use it with Dagster Cloud or do auth.\nIt would be great to incorporate the instructions from here: #7772 and copied below:\nfrom dagster_graphql import DagsterGraphQLClient\nfrom gql.transport.requests import RequestsHTTPTransport\nurl = \"https://yourorg.dagster.cloud/prod\"\ntoken = \"your_token_here\" # a User Token generated from the Cloud Settings page in Dagster Cloud. Note: User Token, not Agent Token\nclient = DagsterGraphQLClient(url, transport=RequestsHTTPTransport(url=url+\"/graphql\", headers={\"Dagster-Cloud-Api-Token\": token}))\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-24T13:49:49Z",
+    "closedAt": "2023-08-28T19:29:51Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16068",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vLbVI",
+    "number": 16069,
+    "title": "Wrong unique detection",
+    "bodyText": "Dagster version\n1.4.5\nWhat's the issue?\n@multi_asset(outs={\"timeseries1\": AssetOut(), \"adj_matrix1\": AssetOut()}) def get_time_series_data_and_adj2(): return 1, 2\nWrongly throws this error:\ndagster._core.errors.DagsterInvalidDefinitionError: Duplicate asset key: AssetKey(['adj_matrix1'])\nWhat did you expect to happen?\nworking!\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-24T14:16:38Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16069",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vLheK",
+    "number": 16070,
+    "title": "Serializable meta-value",
+    "bodyText": "Dagster version\n1.4.5\nWhat's the issue?\n\"dagster._core.errors.DagsterInvalidMetadata: Could not resolve the metadata value for \"columns\" to a known type. Its type was <class 'pandas.core.indexes.base.Index'>. Consider wrapping the value with the appropriate MetadataValue type\"\nYou should serialize the meta value\nWhat did you expect to happen?\nYou should serialize the meta value\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-24T14:29:13Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16070",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vMQG3",
+    "number": 16073,
+    "title": "Add `asset_spec_for_key` and `asset_spec` methods on `OpExecutionContext`",
+    "bodyText": "Filing this to track because it came up recently in a user conversation.\n@alangenfeld - feel free to un/re-assign if this is out of the scope of what you're working on.",
+    "state": "OPEN",
+    "createdAt": "2023-08-24T16:10:27Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16073",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vOVei",
+    "number": 16088,
+    "title": "Failure to load a graph with multiple partition definitions and observable source assets",
+    "bodyText": "Dagster version\n1.4.8\nWhat's the issue?\nThe piece of dagster code below combining observable source assets with multiple partition definitions fails to load, with a an error about unconnected inputs:\nTraceback (most recent call last):\n  File \"/home/abdo/opt/tmp/dagster-bug/test.py\", line 40, in <module>\n    defs = dg.Definitions(\n           ^^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py\", line 422, in __init__\n    self._created_pending_or_normal_repo = _create_repository_using_definitions_args(\n                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py\", line 292, in _create_repository_using_definitions_args\n    @repository(\n     ^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/decorators/repository_decorator.py\", line 161, in __call__\n    else CachingRepositoryData.from_list(\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data.py\", line 346, in from_list\n    return build_caching_repository_data_from_list(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data_builder.py\", line 191, in build_caching_repository_data_from_list\n    for job_def in get_base_asset_jobs(\n                   ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/assets_job.py\", line 98, in get_base_asset_jobs\n    build_assets_job(\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/assets_job.py\", line 233, in build_assets_job\n    return graph.to_job(\n           ^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/graph_definition.py\", line 641, in to_job\n    return JobDefinition.dagster_internal_init(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/job_definition.py\", line 278, in dagster_internal_init\n    return JobDefinition(\n           ^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/decorator_utils.py\", line 195, in wrapped_with_pre_call_fn\n    return fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/job_definition.py\", line 154, in __init__\n    self._graph_def.get_inputs_must_be_resolved_top_level(self._asset_layer)\n  File \"/home/abdo/opt/tmp/dagster-bug/.venv/lib/python3.11/site-packages/dagster/_core/definitions/graph_definition.py\", line 277, in get_inputs_must_be_resolved_top_level\n    raise DagsterInvalidDefinitionError(\ndagster._core.errors.DagsterInvalidDefinitionError: Input 'asset_b' of op 'AssetX' has no way of being resolved. Must provide a resolution to this input via another op/graph, or via a direct input value mapped from the top-level graph. To learn more, see the docs for unconnected inputs: https://docs.dagster.io/concepts/io-management/unconnected-inputs#unconnected-inputs.\n\nWhat did you expect to happen?\nI'd expect the reproducer code below to load without error.\nHow to reproduce?\nThis is a reproducer, as minimal as I could make it.\nimport dagster as dg\nimport warnings\n\nwarnings.filterwarnings(\"ignore\", category=dg.ExperimentalWarning)\n\nclass B:\n    pass\n\nclass X:\n    pass\n\npart_a = dg.StaticPartitionsDefinition([\"a1\", \"a2\"])\n@dg.observable_source_asset(\n    name=\"AssetA\",\n    partitions_def=part_a,\n)\ndef asset_a():\n    pass\n\npart_b = dg.StaticPartitionsDefinition([\"b1\", \"b2\"])\n\n@dg.observable_source_asset(\n    name=\"AssetB\",\n    partitions_def=part_b,\n)\ndef asset_b():\n    pass\n\n\n@dg.asset(\n    name=\"AssetX\",\n    partitions_def=part_b,\n    ins={\n        \"asset_b\": dg.AssetIn(\"AssetB\"),\n    },\n)\ndef asset_x(asset_b: B) -> X:\n    return X()\n\ndefs = dg.Definitions(\n    assets=[asset_a, asset_b, asset_x],\n)\nIn order to trigger the error, python reproducer.py.\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nI've spent some time trying to track this problem down. I don't have a complete picture, but it looks like the following happens:\n\nbuild_asset_job here runs twice, for partitions_def's part_a and part_b.  The crash happens for the part_a case, where assets=[] and source_assets = [asset_a, asset_b, asset_x].\nThen, while constructing the job, we reach here\nInside that test, node.get_inputs_must_be_resolved_top_level here returns an input for the node associated to asset_x. However, for this input this check fails, and triggers the exception.\n\nIt looks like the problem is that node.get_inputs_must_be_resolved_top_level should really not return any input, as we are passing all the assets as source_assets, even if asset_x is not a SourceAsset.\nMaybe this should actually be using resolved_source_assets?\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-24T23:42:51Z",
+    "closedAt": "2023-08-29T19:01:57Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16088",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vQuj_",
+    "number": 16092,
+    "title": "init-user-deployment is missing securityContext in daemon",
+    "bodyText": "Dagster version\n1.4.9\nWhat's the issue?\nIn the deployment-daemon.yaml a initContainer is created for every element of userDeployment.deployments\nThis is not inheriting the (container-)security context Values.dagsterDaemon.securityContext like the check-db-ready initContainer or the actual daemon.\nWith Pod Security restrictions in place there is no way to get past the admission hook\nclient.go:510: [debug] Patch Deployment \"quyl-dagster-daemon\" in namespace my-namespace\nW0825 10:34:21.105561  147828 warnings.go:70] would violate PodSecurity \"restricted:v1.24\":  ...\n\nWhat did you expect to happen?\nSetting Values.dagsterDaemon.securityContext should set security context for all containers\nHow to reproduce?\nA basic yaml file like\n---\n# values.yaml\n.containerSecurityContext: &containerSecurityContext\n  runAsUser: 1001\n\ndagsterDaemon:\n  securityContext: *containerSecurityContext\n\nand looking at the deployment with\nhelm install -f values.yaml -n _my-namespace_\nand kubectl get deployment -o yaml _my-namespace_-dagster-daemon\n\n...\n- command:\n        - sh\n        - -c\n        - until nslookup k8s-example-user-code-1; do echo waiting for user service;\n          sleep 2; done\n        image: docker.io/busybox:1.28\n        imagePullPolicy: IfNotPresent\n        name: init-user-deployment-k8s-example-user-code-1\n        resources: {}\n        terminationMessagePath: /dev/termination-log\n        terminationMessagePolicy: File\n\n(without the securityContext section)\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-25T09:05:58Z",
+    "closedAt": "2023-08-29T18:08:30Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16092",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vQyJt",
+    "number": 16093,
+    "title": "Automaterialized run crashes with failed PartitionConfig invariant failure if new asset is added",
+    "bodyText": "Dagster version\ndagster, version 1.4.9\nWhat's the issue?\nAutomaterialized run crashes with failed PartitionConfig invariant failure if new asset is added at a wrong time. It is easiest to explain with example:\nWe have two dependent assets x1 -> y1.\nAutomaterialization triggers a run for asset x1.\nWe add another pair of assets x2 -> y2 (or maybe any other kind of assets, not sure)\nAutomaterialization triggers a run for asset y1 and it fails.\nHow to reproduce?\nRepro is here: https://github.com/psarka/repro/tree/config-partitionsdef-crash\nIt is a timing thing, so things need to be executed in the correct time and order:\n\nEnable automaterialization\nWait for asset x_1 to be materialized\nUncomment assets x_2 and y_2\nWait for asset y_2 to be materialized\nObserve that y_2 materialization failed.\n\nAdditional information\nThis is the start and the end of the error stack trace:\ndagster._check.CheckError: Invariant failed. Description: Can't supply a PartitionedConfig for 'config' with a different PartitionsDefinition than supplied for 'partitions_def'.\n  File \"/home/psarka/mambaforge/envs/repro/lib/python3.11/site-packages/dagster/_grpc/impl.py\", line 137, in core_execute_run\n    yield from execute_run_iterator(\n  File \"/home/psarka/mambaforge/envs/repro/lib/python3.11/site-packages/dagster/_core/execution/api.py\", line 863, in __iter__\n    yield from self.execution_context_manager.prepare_context()\n  File \"/home/psarka/mambaforge/envs/repro/lib/python3.11/site-packages/dagster/_utils/__init__.py\", line 491, in generate_setup_events\n    obj = next(self.generator)\n          ^^^^^^^^^^^^^^^^^^^^\n\n[truncated]\n\n  File \"/home/psarka/mambaforge/envs/repro/lib/python3.11/site-packages/dagster/_core/definitions/job_definition.py\", line 217, in __init__\n    self._partitioned_config = PartitionedConfig.from_flexible_config(\n                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/psarka/mambaforge/envs/repro/lib/python3.11/site-packages/dagster/_core/definitions/partition.py\", line 764, in from_flexible_config\n    check.invariant(\n  File \"/home/psarka/mambaforge/envs/repro/lib/python3.11/site-packages/dagster/_check/__init__.py\", line 1589, in invariant\n    raise CheckError(f\"Invariant failed. Description: {desc}\")\n\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-25T09:14:53Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16093",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vR4Fz",
+    "number": 16094,
+    "title": "Make partition_key available on TypeCheckContext",
+    "bodyText": "What's the use case?\nI'm trying to implement DQ checks framework around DagsterType checks and would like to store check results in some kind of DB. To make use of this history I also need to store a column with partition_key. Unfortunately it's unavailable on TypeCheckContext.\nIdeas of implementation\nAt first glance it looks pretty straightforward. I've found 2 places where TypeCheckContext gets instantiated: PlanExecutionContext and BoundOpExecutionContext. Both have partition_key available.\nAdditional information\nI'd be happy to try my teeth on contributing with this one.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-25T12:19:30Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16094",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vSYHm",
+    "number": 16097,
+    "title": "No example with SkipReason in schedules concept page",
+    "bodyText": "What's the issue or suggestion?\nNone of the examples in the Concept page for schedules return a SkipReason, and the SkipReason API docs don't have a code snippet. We should add an example in at least one location\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-25T13:45:18Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16097",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vUquy",
+    "number": 16120,
+    "title": "AssetDaemon does not properly register in-progress materializations of runs that contain both partitioned and unpartitioned assets",
+    "bodyText": "Dagster version\n1.4.5\nWhat's the issue?\nContext: https://dagster.slack.com/archives/C01U954MEER/p1692279003789069\nThis code makes an invalid assertion: https://sourcegraph.com/github.com/dagster-io/dagster/-/blob/python_modules/dagster/dagster/_utils/caching_instance_queryer.py?L640, which is that assets with different partitions definitions cannot be part of the same run. While this is true for runs launched by the daemon, it is not true of runs that are not.\nConcretely, if you manually launch a run of A(partitioned) -> B, then that run of A should not be considered when determining if B has updated parents in the context of the auto-materialization logic.\nWe should update this logic for the case that the child is unpartitioned, although care will need to be taken to avoid causing performance issues on the first tick of the daemon (and avoid having it query for the latest run of all asset partitions).\nWhat did you expect to happen?\nNo response\nHow to reproduce?\nNo response\nDeployment type\nNone\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-25T21:10:06Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16120",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        },
+        {
+          "name": "area: auto-materialize",
+          "description": "Related to Auto Materialization"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vYSQ7",
+    "number": 16126,
+    "title": "Enable oauth authentication flow for Databricks jobs launched with dagster-databricks",
+    "bodyText": "What's the use case?\nDatabricks now has the ability to delegate permissions to a service principal for interacting with their REST APIs in an automated / programmatic fashion. When using a service principal it is possible to authenticate using an oauth client ID and secret. The databricks-sdk supports authentication with oauth credentials, and will automatically refresh the temporary token retrieved using the client ID and secret.\nThe security and auditing benefits of using a service principal with temporary credentials via oauth are obvious, and in order to support secure best practices we should expose this as an optional way to authenticate with Databricks.\nIdeas of implementation\nOauth client ID and secret could be exposed at the same configuration level that exposes the API token configuration. A runtime check would ensure either the API token, or both oauth client ID and secret were provided by the user.\nAdditional information\nOne blocker to implementing this is that the DatabricksClient class still maintains (deprecated) support for the databricks-api and databricks-cliclients, which only take an API token. If the oauth configuration was exposed and used on the step launcher, the clients implemented fromdatabricks-apianddatabricks-cli` would not be able to be initialized, leaving public attributes of the step launcher in an unexpected state.\nOne solution would be to throw an exception if a user tries to access the _api_client or _client properties when the DatabricksClient has been initialized with oauth creds. This would maintain backwards compatibility for now for users still using tokens who may have a dependency on those attributes. Although in general I'd expect the number of users who might have a dependency on that in the first place to be pretty small.\nIf that feels too messy it could also just wait until the next minor release if the plan is to drop the databricks-api and databricks-cli clients. I'm happy to put in a PR for this, just let me know if the error-throwing solution is reasonable for now or if y'all would rather wait until the next minor release and implement it clean.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-27T21:23:14Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16126",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "integration: databricks",
+          "description": "Related to dagster-databricks"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vbXK3",
+    "number": 16128,
+    "title": "Asset with optional output is not recognized by its `output_name`",
+    "bodyText": "Dagster version\ndagster, version 1.4.3\nWhat's the issue?\nI have an asset with an optional output, and a multi-asset depending on that output's asset:\n@asset(output_required=False)\ndef my_asset(...):\n    ...\n    yield Output({\"key\": \"value\"}, output_name=\"asset_name\")\n\n\n@multi_asset(\n    ins={\"asset_name\": AssetIn(\"my_asset\")},\n    outs={\"multi_1\": AssetOut(), \"multi_2\": AssetOut(), \"multi_3\": AssetOut()},\n)\ndef my_multi_asset(context: OpExecutionContext, asset_name: dict):\n   ...\nWhenever I specify the output_name  for the first asset's optional output, I get the following error:\ndagster._core.errors.DagsterInvariantViolationError: Core compute for op \"my_asset\" returned an output \"asset_name\" that does not exist. The available outputs are ['result']\nWhen I remove the output_name , it all works perfectly.\nIt seems to me that the output_name is not taken into account when provided for optional outputs.\nWhat did you expect to happen?\nI would expect to be able to name the optional output by providing an output_name, and reference it elsewhere with the same name.\nHow to reproduce?\nFollow this template to reproduce the bug:\n@asset(output_required=False)\ndef my_asset(...):\n    ...\n    yield Output({\"key\": \"value\"}, output_name=\"asset_name\")\n\n\n@multi_asset(\n    ins={\"asset_name\": AssetIn(\"my_asset\")},\n    outs={\"multi_1\": AssetOut(), \"multi_2\": AssetOut(), \"multi_3\": AssetOut()},\n)\ndef my_multi_asset(context: OpExecutionContext, asset_name: dict):\n   ...\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nAnother person is also impacted by this issue, cf. Slack thread.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-28T10:08:41Z",
+    "closedAt": "2023-08-28T15:05:38Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16128",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vdCW2",
+    "number": 16129,
+    "title": "Cannot start a code location with 2000 assets due to poor loading performance",
+    "bodyText": "Dagster version\ndagster, version 1.4.9\nWhat's the issue?\nIt takes more than 1 minute to load a code location containing 2000 assets due to quadratic logic in get_base_asset_jobs.  (get_base_asset_jobs calls build_assets_job -> build_node_deps for every asset, and  build_node_deps also loops over all the assets) As a consequence, the daemon fails to start (time out).\nHow to reproduce?\nEdit (September 5th): I now understand what is the deal - this is a combo of many assets with different partitions and many assets without partitions:\nfrom datetime import datetime\nfrom datetime import timedelta\n\nfrom dagster import asset, DailyPartitionsDefinition, AssetKey\nfrom dagster._core.definitions.assets_job import get_base_asset_jobs\n\n\nassets = []\nfor i in range(1000):\n    name = f\"asset_{i}\"\n    start_date = (datetime(2023, 8, 22) - timedelta(days=i)).date()\n\n    assets.append(asset(key_prefix=[\"initial_run\"], name=name)(lambda: 'hi'))\n\n    assets.append(asset(key_prefix=[\"daily_run\"], name=name,\n                        partitions_def=DailyPartitionsDefinition(start_date=str(start_date)),\n                        deps=[AssetKey([\"initial_run\", name])])(lambda: 'hi'))\n\njobs_2 = get_base_asset_jobs(assets, [], [], {}, None)\nRepro when reported initially:\n\nUse these 2000 assets for example:\nimport random\nimport string\nfrom datetime import datetime\nfrom datetime import timedelta\n\nfrom dagster import DailyPartitionsDefinition\nfrom dagster import asset\n\n\ndef process():\n    return \"hi\"\n\n\nassets = []\n\nfor i in range(2000):\n    name = \"\".join(random.choices(string.ascii_letters + string.digits, k=6))\n    start_date = (datetime(2023, 8, 22) - timedelta(days=random.randint(0, 365))).date()\n    partitions_def = DailyPartitionsDefinition(start_date=str(start_date), timezone=\"UTC\")\n    assets.append(asset(key_prefix=[\"daily_run\"], name=name, partitions_def=partitions_def)(process))\n\n\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-28T14:30:06Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16129",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vdbxg",
+    "number": 16133,
+    "title": "In auto-materialize history UI, guide people to `max_materializations_per_minute` parameter",
+    "bodyText": "People are often confused why Dagster is only materializing their latest partition. We could make it easier for them to understand why and change it.\nWhat we've heard\n\nHelp me understand this. I've changed the data version of upstream and downstream seems to recognise that and wanted to materialize, but than discarded that?",
+    "state": "OPEN",
+    "createdAt": "2023-08-28T15:29:19Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16133",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: auto-materialize",
+          "description": "Related to Auto Materialization"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vdqMd",
+    "number": 16138,
+    "title": "Improve Large Backfill Submission UX",
+    "bodyText": "What's the use case?\nSubmitting large backfills to QueuedRunCoordinator can be very slow and painful. How can we speed up the submission of large backfills to the Queue?\nInternal context:\nSelf hosting Dagster and on 1.3.11. Using the K8sRunLauncher + Multiprocess Executor with the QueuedRunCoordinator\nWe\u2019re submitting multiple large backfills (in the 1000s of runs) and have noticed it takes quite awhile for jobs to be enqueued.  It appears that all backfills use the same Queue, and if you submit sequential backfills all jobs in earlier backfills must be enqueued before later backfills can be enqueued. This is somewhat problematic if we want to start different backfills in parallel.\nHere\u2019s our config for QueuedRunCoordinator:\n  class: QueuedRunCoordinator\n  config:\n    dequeue_interval_seconds: 5\n    dequeue_num_workers: 4\n    dequeue_use_threads: true\n    max_concurrent_runs: 100\n\nIdeas of implementation\nEnqueue runs in parallel, similar to #8642 which was for run submission\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-28T16:04:45Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16138",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 3
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5veXrb",
+    "number": 16142,
+    "title": "Add description to AssetCheckResult and AssetCheckEvaluation",
+    "bodyText": "When writing an asset check example, I found that it would have been helpful to be able to provide a free-text description of the check result",
+    "state": "OPEN",
+    "createdAt": "2023-08-28T18:21:38Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16142",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: asset-checks",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vgljB",
+    "number": 16161,
+    "title": "Support for Argo Workflows",
+    "bodyText": "What's the use case?\nWe have an existing Argo Workflows deployment but could potentially benefit from the data governance provided by dagster for data processing workflows.\nIt would be great if we could use Argo Workflows with dagster, having dagster orchestrate our data processing workflows.\nIdeas of implementation\nAllow using an Argo Workflow as a Run Worker, similar to how a vanilla Job may be used currently.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-29T03:24:05Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16161",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: integrations",
+          "description": "General integrations related, including requests to a new integration"
+        },
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vkLs3",
+    "number": 16168,
+    "title": "Make op retry policies still work when the op process crashes",
+    "bodyText": "What's the use case?\nOp retries are useful for retrying when an exception happens: https://docs.dagster.io/concepts/ops-jobs-graphs/op-retries#op-retries\nBut since they are managed within the op process, when that process crashes, they don't trigger. The request here is to ensure that the run worker that is controlling the op process considers the op retry policy and restarts the op process.\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-29T14:07:09Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16168",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 9
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vlMe-",
+    "number": 16172,
+    "title": "S3 Session not Respecting Environment Proxy Settings. Allow users to supply in proxy config",
+    "bodyText": "The config object to get the s3 client as defined here does not allow for users to specify a proxy.\nBy updating the Config object here I was able to successfully connect and upload a file. Previously, without this config, the request would time out.\ne.g.\nreturn Config(retries=retry_config,\n        proxies={\n             'https': 'http://proxy...',\n             'http': 'https://proxy...'\n         },\n        proxies_config={\n            'proxy_ca_bundle': '/path/to/ca/bundle',\n        }\n\nIt would be useful to allow the S3Resource to supply additional params such as proxies and proxies_config instead of just max_attempts",
+    "state": "OPEN",
+    "createdAt": "2023-08-29T16:29:41Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16172",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vllsO",
+    "number": 16178,
+    "title": "When asset is materialized and checked in the same step, error if check result is yielded before materialization",
+    "bodyText": "",
+    "state": "OPEN",
+    "createdAt": "2023-08-29T17:41:15Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16178",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: asset-checks",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vl0R1",
+    "number": 16182,
+    "title": "Runtime severity for asset checks",
+    "bodyText": "Idea: rename severity to max_severity\nExample:\n@asset_check(asset=asset1, max_severity=AssetCheckSeverity.ERROR)\ndef check1():\n    num_missing_records = ...\n    \n    if num_missing_records == 0:\n        return AssetCheckResult.success(metadata=...)\n    elif num_missing_records < 10:\n        return AssetCheckResult.warn(metadata=...)\n    else:\n        return AssetCheckResult.error(metadata=...)\nThe default max_severity would be AssetCheckSeverity.WARN?\nThis would raise an error because the result exceeds the max severity:\n@asset_check(asset=asset1)\ndef check1():\n    return AssetCheckResult.error(metadata=...)\nIf you don't specify the severity, the result defaults to the max severity:\n@asset_check(asset=asset1, max_severity=AssetCheckSeverity.ERROR)\ndef check1():\n    return AssetCheckResult(success=False, metadata=...)\nOther ideas\n\nAccept both a severity and a max_severity argument.\n@asset_check and AssetCheckSpec accept a set of AssetCheckSeverity's. Compared to the above approach, this would allow making it clear that certain checks will never raise WARN-level results. Though I'm not sure what we'd do with this knowledge.\n@asset_check and AssetCheckSpec do not have any severity-related arguments, and severities are instead always provided at runtime.  A downside of this approach is that it means we always need to wait until a check completes in order to start materializing a downstream asset, because the check could conceivable return an ERROR-level result.\n\nWhat we've heard\n\n#15880 (comment)\n#15880 (comment)",
+    "state": "OPEN",
+    "createdAt": "2023-08-29T18:26:51Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16182",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: asset-checks",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vmGwV",
+    "number": 16183,
+    "title": "Render URLs as Clickable Links in Run Logs in the UI",
+    "bodyText": "What's the use case?\nIn our workflow, we often log URLs, specifically for Databricks runs, within our internal logs. Navigating between Dagster and other platforms, such as Databricks, is a common task. Currently, to access these URLs from the logs, we have to manually select the entire URL with the cursor, which is not only tedious but also time-consuming.\nIdeas of implementation\n\nImplement a URL detection mechanism within the Run logs viewer in the UI. This can be achieved using regular expressions or other string parsing techniques.\nClickable Links: Once a URL is detected, render it as a clickable link. Users should be able to click these links, which should open in a new browser tab/window.\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-29T19:21:05Z",
+    "closedAt": "2023-08-29T20:03:20Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16183",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vnAQp",
+    "number": 16190,
+    "title": "Dagster CLI does not support turning the auto-materialize daemon on/off",
+    "bodyText": "What's the use case?\nI'd like to be able to use the CLI to turn the auto-materialize on/off.\nCLI capablity is available to materialize an asset, turn on/off sensors and schedules. This capability needs to be extended to the auto-materialize daemon toggle.\nWith this feature i'd be able to fully script my deployment.\nAt present with version 1.4.7 the only way to turn this on/off is with Dagit UI.\n\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-29T21:23:26Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16190",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "area: auto-materialize",
+          "description": "Related to Auto Materialization"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 1
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vqCw0",
+    "number": 16195,
+    "title": "Provide dummy values for `context` fields like `op.name` and `job_name` when an op is invoked directly",
+    "bodyText": "What's the use case?\nI'm trying to write unit tests for an op that requires a context. My op accesses certain context fields like context.op.name and context.job_name, but these fields are not set when invoking the op directly in a unit test using  context=build_op_context(). Here is a minimum example:\n# pipeline.py\nfrom dagster import Config, ConfigurableResource, op, OpExecutionContext\n\nclass MyConfig(Config):\n    ...\n\nclass MyResource(ConfigurableResource):\n    ...\n\n@op\ndef my_op(context: OpExecutionContext, config: MyConfig, resource_1: MyResource):\n    context.log.info(context.op.name)\n    context.log.info(context.job_name)\n\n# test_op.py\nfrom unittest.mock import MagicMock\nfrom dagster import build_op_context\nfrom pipeline import my_op, MyConfig, MyResource\n\ndef test_my_op():\n    my_op(\n        context=build_op_context(),\n        config=MyConfig(),\n        resource_1=MagicMock()\n    )\n\nHowever, running test_my_op() results in an error:\ndagster._core.errors.DagsterInvalidPropertyError: The op property is not set on the context when a solid is directly invoked.\nIdeas of implementation\nIdeally, calling build_op_context() would automatically provide dummy values for fields such as context.op.name and context.job_name. Another option is to add a keyword argument to build_op_context() called testable_properties or something along those lines. The fields can be set by the user for use in unit tests. The usage would be as follows:\nbuild_op_context(testable_properties={\"op.name\": \"test_op\", \"job_name\": \"test_job\"})\n\nThese suggestions only make sense when using build_op_context() within a unit test. In other cases when invoking an op directly, it would make sense for these context fields to not be set.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-30T09:26:37Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16195",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vr3aQ",
+    "number": 16200,
+    "title": "Asset checks on graph-backed assets",
+    "bodyText": "graph_asset, graph_multi_asset should accept check_specs parameters.\nAssetsDefinition.from_graph should accept a check_specs_by_output_name parameter.",
+    "state": "OPEN",
+    "createdAt": "2023-08-30T14:11:54Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16200",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: asset-checks",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vsTyl",
+    "number": 16206,
+    "title": " Materialize/Backfill missing partition for a selection of assets with different partition definitions",
+    "bodyText": "What's the use case?\nI'm looking for a way to backfill a selection of assets with different partition definitions from the UI, but only backfill the missing partitions. It seems that currently you can only backfill missing partitions for assets by running them one at a time. This is very useful when backfilling assets in particular, because it will allow users to start a backfill for an entire lineage tree of assets. In case an upstream asset fails, this can cause failures for all downstream assets. It would be useful to be able to start backfills for all of the assets that have failed in a lineage tree with one materialize command. For example, I could materialize all missing partitions in this tree in one go:\n\nRecently, this issue was already mentioned #14073 here and a PR (#14514) was merged to allow you materialize a selection of assets, but it doesn't allow you to backfill only missing partitions yet.\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-30T15:13:29Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16206",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 3
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vtkXB",
+    "number": 16214,
+    "title": "Use `AssetExecutionContext` in `dagster-dbt`",
+    "bodyText": "What's the use case?\nRather than using OpExecutionContext, use AssetExecutionContext.\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-30T19:01:30Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16214",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        },
+        {
+          "name": "integration: dbt",
+          "description": "Related to dagster-dbt"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vt9wQ",
+    "number": 16221,
+    "title": "update starter repo readme to not mention repository",
+    "bodyText": "Issue from the Dagster Slack\nThis issue was generated from the slack conversation at: https://dagster.slack.com/archives/C01U954MEER/p1693364117676589?thread_ts=1693364117.676589&cid=C01U954MEER\n\nConversation excerpt\nU05LRHJ5WSE: Hey, sorry for the basic question but can anyone help me understand <https://github.com/dagster-io/quickstart-aws|the quickstart-aws Dagster repository> by Dagster-IO on connecting S3 to Dagster via dagster-aws? On the section on using environment variables to handle secrets, it talks about configuring repository.py which does not exist in the repository. I have my AWS Access Key and Secret Access Key, how do I give Dagster my AWS credentials? As far as I can tell, I just have to properly configure the resource definition, but the documentation's been a bit overwhelming.\nRunning the code base I have now gives an botocore.exceptions.ClientError: The AWS Access Key Id you provided does not exist in our records. error.\nUULA0R2LV: <@U018K0G2Y85> issue update starter repo readme to not mention repository\n\nMessage from the maintainers:\nDo you care about this too? Give it a \ud83d\udc4d. We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-30T20:27:30Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16221",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vwPLa",
+    "number": 16230,
+    "title": "Sharded daemon",
+    "bodyText": "What's the use case?\nOur team has been increasing our usage of sensors pretty dramatically, and we have noticed that they are starting to run less often. The solution has been to run the daemon with a larger set of resources + using threads. However, I do wonder if there would ever be a point at which hosting the daemon on a single machine would stop working, and it would make sense for the daemon to be sharded (maybe across the different types of daemons).\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T07:08:20Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16230",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vxPLC",
+    "number": 16231,
+    "title": "dagster-shell deal with huge size log",
+    "bodyText": "What's the use case?\nWhen use dagster-shell to execute a script, sometime the log could be very huge due to some unexpected issues.\nIdeas of implementation\nIs there anyway to show only the latest like 1000 lines of log, but not display/save all log as event in the runs?\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T09:50:25Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16231",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vyJ-o",
+    "number": 16232,
+    "title": "Allow to set default value for `EnvVar`",
+    "bodyText": "What's the use case?\nAllow to set a default value for EnvVar... and therefore not raise an error if the environment variable is not defined when evaluated.\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T12:21:31Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16232",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vyP1y",
+    "number": 16233,
+    "title": "Key-prefixing an asset should also prefix the asset keys on that asset's specs",
+    "bodyText": "The following should pass, but I believe currently does not:\n@asset(check_specs=[AssetCheckSpec(asset=\"asset1\", name=\"check1\")])\ndef asset1():\n    ...\n\nasset1_loaded = load_assets_from_current_module(key_prefix=\"foo\")\nassert asset1_loaded.check_specs[0].asset_key == AssetKey([\"foo\", \"asset1\"])",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T12:36:03Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16233",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: asset-checks",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vyRKW",
+    "number": 16234,
+    "title": "@observable_source_asset entering default IO managers handle_output function",
+    "bodyText": "Dagster version\n1.4.10\nWhat's the issue?\nWhen attempting to observer a source asset function, decorated with @observable_source_asset, the run fails as it is entering the default IO managers handle_output function, with a None type for the object.\nSetup has multiple IO managers, with the observed asset using a non-default one.\nCustom IO manager is used (for mssql), but it happens in a default one as well.\nfrom dagster import DataVersion, observable_source_asset\nfrom analytics.resources.sqlserver__resources.utils import connect_mssql\n\nimport pandas as pd\nimport os\n\n# default io defined elsewhere => {'io_manager': io_mgmt, 'non_default__io_manager': io_nd_mgmt}\n\n@observable_source_asset(\n    key_prefix=[\n        \"SQL_Server_Sources\",\n        \"Datamart\",\n        \"schema_name\",\n        \"intersections\",\n    ],\n    io_manager_key=\"non_default__io_manager\",\n)\ndef intersections():\n    host = os.getenv(\"host\")\n    port = os.getenv(\"port\")\n    database = os.getenv(\"database\")\n    username = os.getenv(\"username\")\n    password = os.getenv(\"password\")\n\n    cfg = {\n        \"host\": host,\n        \"port\": port,\n        \"database\": database,\n        \"username\": username,\n        \"password\": password,\n    }\n    df = None\n    with connect_mssql(cfg, True) as conn:\n        df = pd.read_sql_table(\n            table_name=\"intersections\", schema=\"STG\", con=conn\n        )\n    assert df is not None\n    r = f\"{df.shape[0]}\"\n    return DataVersion(r)\nSnippet of the custom IO manager:\nclass MSSQLIOManager(ConfigurableIOManager):\n    host: str\n    port: str\n    database: str\n    username: str\n    password: str\n\n    @property\n    def _config(self):\n        return self.dict()\n\n    def load_input(self, context: InputContext) -> DataFrame:\n        asset_key = context.asset_key\n        schema, table = asset_key.path[-2], asset_key.path[-1]\n        with connect_mssql(config=self._config, read_only=True) as con:\n            result = read_sql(\n                sql=_get_select_statement(\n                    table,\n                    schema,\n                    (context.metadata or {}).get(\"columns\"),\n                    context,\n                ),\n                con=con,\n            )\n            result.columns = map(str.lower, result.columns)  # type: ignore\n            return result\n\n    def handle_output(self, context: OutputContext, obj: DataFrame):\n        # this fails as obj is None\n        if obj.empty:\n            context.log.warning(\"No data to save\")\n            return\n        schema, table = context.asset_key.path[-2], context.asset_key.path[-1]\n        ... more\nWhat did you expect to happen?\nSource asset to not call the IO manager function. Even more so, not the default IO manager\nHow to reproduce?\nCreate a decorated observable source asset and see if it enters the default IO handle_output function\nDeployment type\nDocker Compose\nDeployment details\nOn-prem\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T12:38:49Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16234",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vySp-",
+    "number": 16235,
+    "title": "Enable step to continue executing after ERROR-level check fails",
+    "bodyText": "The following should pass, but I believe it does not, because the step will fail and stop executing before the second AssetCheckResult is yielded:\n@asset(\n    check_specs=[\n        AssetCheckSpec(asset=\"asset1\", name=\"check1\", severity=AssetCheckSeverity.ERROR),\n        AssetCheckSpec(asset=\"asset1\", name=\"check2\", severity=AssetCheckSeverity.ERROR),\n    ]\n)\ndef asset1():\n    yield Output(None)\n    yield AssetCheckResult(success=False, check_name=\"check1\")\n    yield AssetCheckResult(success=False, check_name=\"check2\")\n\nresult = materialize([asset1])\nassert len(result.get_asset_check_evaluations()) == 2\nWe could address this by waiting to raise an exception until after the step's compute function has completed executing.",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T12:42:33Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16235",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: asset-checks",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vyge6",
+    "number": 16236,
+    "title": "Python API for materializing assets with multiprocessing executor",
+    "bodyText": "If you have a non-asset job, you can use execute_job to execute a run of it with the multiprocess executor.\nHowever, if you have a set of assets and you want to execute a run with the multiprocess executor that materializes them, there's no straightforward way to do this.\nThis could look like:\ndefs = Definitions(assets=my_assets, executor=multiprocess_executor)\ndefs.materialize()",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T13:15:26Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16236",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vzKhL",
+    "number": 16240,
+    "title": "pydantic2 support",
+    "bodyText": "What's the use case?\ndagster 1.4.10 depends on pydantic !=1.10.7 and <2.0.0\nWe made a dagster plugin for gdsfactory however most of plugins depend on pydantic2 except dagster\nhttps://github.com/gdsfactory/gplugins/actions/runs/6038690346/job/16385613667\n\nIdeas of implementation\nport dagster to pydantic 2\nAdditional information\n#15793\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-31T14:44:33Z",
+    "closedAt": "2023-08-31T15:50:06Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16240",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5vzyu5",
+    "number": 16244,
+    "title": "Cursor jumping around when hitting \"enter\" key in Launchpad in Firefox (Dagster Cloud)",
+    "bodyText": "Dagster version\n1.4.10\nWhat's the issue?\nThere's still some unfortunate bugs in the UI when using Firefox. In the Launchpad, when I hit enter at the end of a line which is the first line in a nested block, it variously de-indents or indents the current line and creates a newline, while keeping the cursor at the same line. Sometimes it indents the current line when hitting enter at the end of the line.\nIf the cursor is at the beginning of the line, the text following the cursor on the same line will drop down a line to the left rule, while the cursor stays at the same line and is dedented one or many times.\nBefore hitting the enter key, my launchpad looks like this:\n\nAfter hitting the enter key, the line the cursor is on is indented, and the cursor stays on the same line. A newline is also created:\n\nHitting enter a second time (after the indent and newline) seems to work as expected.\nWhat did you expect to happen?\nNo response\nHow to reproduce?\nOpen a launchpad with existing configuration and try adding a newline with the cursor at the end of a line.\nDeployment type\nDagster Cloud\nDeployment details\nNo response\nAdditional information\nI can't reproduce the issue with a local Dagster deployment, it only seems to occur in Dagster Cloud launchpad views.\nMy Firefox version is: 116.0.3 (64-bit). This is on a Mac M1.\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-08-31T16:14:23Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16244",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v1Wye",
+    "number": 16248,
+    "title": "DuckDBPandasIOManager is not thread safe and is prone to SQL injection",
+    "bodyText": "Dagster version\n1.4.11\nWhat's the issue?\nI tried to do a backfill with approx 3.5k hourly partitions using the DuckDBPandasIOManager as an IO manager. Halfway through, all my jobs started failing because of the following error:\nduckdb.IOException: IO Error: Could not set lock on file \"<snip>.db\": Resource temporarily unavailable\nWhat did you expect to happen?\nI suspect DuckDBPandasIOManager does not take into account that it can happen that two jobs want to write (and read) data to the same file simultaneously, which can corrupt data.\nHow to reproduce?\nRun many jobs which write dataframes to the same parquet file and backfill with a high max_concurrent_runs.\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "CLOSED",
+    "createdAt": "2023-08-31T20:29:46Z",
+    "closedAt": "2023-09-01T11:55:13Z",
+    "url": "https://github.com/dagster-io/dagster/issues/16248",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v2tjB",
+    "number": 16260,
+    "title": "SQLite Error when creating Dynamic Partitions",
+    "bodyText": "Dagster version\n1.4.11\nWhat's the issue?\nI was attempting to create a sensor to detect unprocessed files in a S3 repository and generate the assets for them using dynamic partitions. An internal SQL error occurs when attempting to create partitions for the default boto3 MaxKeys parameter of 1000.\nTraceback (most recent call last):\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/dagster/_daemon/sensor.py\", line 534, in _process_tick_generator\n    yield from _evaluate_sensor(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/dagster/_daemon/sensor.py\", line 698, in _evaluate_sensor\n    instance.add_dynamic_partitions(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/dagster/_utils/__init__.py\", line 651, in inner\n    return func(*args, **kwargs)\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/dagster/_core/instance/__init__.py\", line 2031, in add_dynamic_partitions\n    return self._event_storage.add_dynamic_partitions(partitions_def_name, partition_keys)\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/dagster/_core/storage/event_log/sql_event_log.py\", line 1954, in add_dynamic_partitions\n    existing_rows = conn.execute(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py\", line 1412, in execute\n    return meth(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/sql/elements.py\", line 515, in _execute_on_connection\n    return connection._execute_clauseelement(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py\", line 1635, in _execute_clauseelement\n    ret = self._execute_context(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py\", line 1844, in _execute_context\n    return self._exec_single_context(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py\", line 1984, in _exec_single_context\n    self._handle_dbapi_exception(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py\", line 2339, in _handle_dbapi_exception\n    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py\", line 1965, in _exec_single_context\n    self.dialect.do_execute(\n  File \"~/.cache/pypoetry/virtualenvs/venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py\", line 921, in do_execute\n    cursor.execute(statement, parameters)\nsqlalchemy.exc.OperationalError: (sqlite3.OperationalError) too many SQL variables\n[SQL: SELECT dynamic_partitions.partition \nFROM dynamic_partitions \nWHERE dynamic_partitions.partition IN (?, ?, ?, ?, <OMITTED FOR BREVITY> ?, ?, ?) AND dynamic_partitions.partitions_def_name = ?]\n[parameters: ('dummy_dir/0/0.txt', 'dummy_dir/0/1.txt', 'dummy_dir/0/2.txt', <OMITTED FOR BREVITY> 'dummy_dir/9/99.txt','s3_files')]\n(Background on this error at: https://sqlalche.me/e/20/e3q8)\n\nWhat did you expect to happen?\nI would expect the dynamic partitioning to be able to handle 1000+ partitions. This appears to be linked to a RHEL-specific limitation of the SQLITE_MAX_VARIABLE_NUMBER variable that limits variables to <1000 (see this forum post). The error is also not encountered on Ubuntu, which is to be expected given that the SQLITE_MAX_VARIABLE_NUMBER variable is 250000.\nIf the user is responsible for setting this variable, it should be documented.\nHow to reproduce?\nUsing a RHEL 7 instance:\n\nCreate a directory with 1000+ dummy files. My use-case was S3, but a local directory should reproduce the same issue\nDeclare a sensor that creates a dynamic partition for each file in the directory and generates an asset\nStart Dagster and enable the sensor\n\nThe error should occur when the sensor detects the files.\nDeployment type\nLocal\nDeployment details\nDeployment details:\n\nRHEL 7 / Amazon Linux 2\nPython 3.10\nDagster 1.4.11\nDagster-aws 0.20.11\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-09-01T02:32:55Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16260",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 1
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v72mU",
+    "number": 16287,
+    "title": "[bug] Data versions don't work properly with self-partitioned assets + partition range materializations",
+    "bodyText": "Something gets screwy in the provenance tracking. To see this, change the logic in 'execution_tests/test_data_versions.py::test_stale_status_self_partitioned to materialize partitions with a range instead of a loop.",
+    "state": "OPEN",
+    "createdAt": "2023-09-01T19:37:39Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16287",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v8g8y",
+    "number": 16293,
+    "title": "\"good first issues\" link is broken",
+    "bodyText": "What's the issue or suggestion?\nWhen the \"good first issues\" link is clicked from the contribution guide, it expands to https://github.com/dagster-io/dagster/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22 and comes to a github page that says no result matches your search.\nInstead, the link should be https://github.com/dagster-io/dagster/labels/type%3A%20good%20first%20issue where the order of arguments is switched. This one works.\nThe same thing happens with the \"good second issue\" link so it requires a similar fix.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-09-01T22:58:42Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16293",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v8rWJ",
+    "number": 16295,
+    "title": "support dashes / hyphens in definition names",
+    "bodyText": "What we've heard\n\nhttps://dagster.slack.com/archives/C01U954MEER/p1693563992349429\n\nUserWarning: Error loading repository location orchestrate:dagster._core.errors.DagsterInvalidDefinitionError: \"source_my_meltano_project_tap-spreadsheets-anywhere_annotations\" is not a valid name in Dagster. Names must be in regex ^[A-Za-z0-9_]+$.",
+    "state": "OPEN",
+    "createdAt": "2023-09-01T23:43:41Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16295",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v9j9K",
+    "number": 16297,
+    "title": "[Documentation Feedback] Problem on /dagster-cloud/deployment/agents/amazon-ecs/configuration-reference#per-deployment-configuration page",
+    "bodyText": "Does \"code servers\" in the comment here mean the dagster orchestrator/agent? (And the \"runs\" are the actual workers?)",
+    "state": "OPEN",
+    "createdAt": "2023-09-02T06:44:35Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16297",
+    "labels": {
+      "nodes": []
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v_DMP",
+    "number": 16300,
+    "title": "Fivetran documentation has erroneous Definitions call",
+    "bodyText": "What's the issue or suggestion?\nThe Fivetran documentation here shows a Definitions object being built in which the output of load_assets_from_fivetran_instance is passed to the Definitions initializer like this:\ndefs = Definitions(\n    jobs=[my_upstream_job],\n    assets=[fivetran_assets, survey_responses_file],\n    resources={\"snowflake_io_manager\": SnowflakePandasIOManager(...)},\n)\n\nfivetran_assets is a list though, so running this example throws an error because Definitions is expecting the assets argument to be a list of AssetDefinitions. In this case, [fivetran_assets, survey_responses_file] is a list of [List[AssetDefinition], AssetDefinition. It seems that the fivetran_assets list needs to be unpacked, like this:\ndefs = Definitions(\n    jobs=[my_upstream_job],\n    assets=[*fivetran_assets, survey_responses_file],\n    resources={\"snowflake_io_manager\": SnowflakePandasIOManager(...)},\n)\n\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-09-02T18:32:38Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16300",
+    "labels": {
+      "nodes": [
+        {
+          "name": "area: docs",
+          "description": "Issues related to documentation in general"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5v_kx5",
+    "number": 16302,
+    "title": "Support lists of values in the partition selection launchpad ",
+    "bodyText": "What's the use case?\nSee https://dagster.slack.com/archives/C01U954MEER/p1693253738981109\nUse case: copy and paste a list of partitions into the launchpad. With a previous version of the UI you could do this\nIdeas of implementation\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-09-03T05:03:46Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16302",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: feature-request",
+          "description": ""
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5wCy-L",
+    "number": 16304,
+    "title": "Dagster stuck in crash loop: Thread for BACKFILL did not shutdown gracefully",
+    "bodyText": "Dagster version\n1.4.11\nWhat's the issue?\n2023-09-04 08:13:16 +0000 - dagster - INFO - Launching Dagster services...                                                                             \n2023-09-04 08:13:17 +0000 - dagster.daemon - ERROR - Thread for BACKFILL did not shut down gracefully.                                                 \n2023-09-04 08:13:17 +0000 - dagster.daemon - INFO - Daemon threads shut down.                                                                          \nTraceback (most recent call last):                                                                                                                     \n  File \"<frozen runpy>\", line 198, in _run_module_as_main                                                                                              \n  File \"<frozen runpy>\", line 88, in _run_code                                                                                                         \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/dagster/_daemon/__main__.py\", line 3, in <module>                           \n    main()                                                                                                                                             \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/dagster/_daemon/cli/__init__.py\", line 154, in main                         \n    cli(obj={})                                                                                                                                        \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/click/core.py\", line 1157, in __call__                                      \n    return self.main(*args, **kwargs)                                                                                                                  \n           ^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                                                  \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/click/core.py\", line 1078, in main                                          \n    rv = self.invoke(ctx)                                                                                                                              \n         ^^^^^^^^^^^^^^^^                                                                                                                              \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/click/core.py\", line 1688, in invoke                                        \n    return _process_result(sub_ctx.command.invoke(sub_ctx))                                                                                            \n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                             \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/click/core.py\", line 1434, in invoke                                        \n    return ctx.invoke(self.callback, **ctx.params)                                                                                                     \n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                                     \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/click/core.py\", line 783, in invoke                                         \n    return __callback(*args, **kwargs)                                                                                                                 \n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                                                 \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/dagster/_daemon/cli/__init__.py\", line 65, in run_command                   \n    _daemon_run_command(instance, code_server_log_level, kwargs)                                                                                                                                                                          \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/dagster/_core/telemetry.py\", line 170, in wrap                              \n    result = f(*args, **kwargs)                                                                                                                        \n             ^^^^^^^^^^^^^^^^^^                                                                                                                        \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/dagster/_daemon/cli/__init__.py\", line 82, in _daemon_run_command           \n    controller.check_daemon_loop()                                                                                                                     \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/dagster/_daemon/controller.py\", line 296, in check_daemon_loop              \n    self.check_daemon_heartbeats()                                                                                                                     \n  File \"/home/maurits/miniconda3/envs/develop/lib/python3.11/site-packages/dagster/_daemon/controller.py\", line 265, in check_daemon_heartbeats        \n    raise Exception(\"Stopped dagster-daemon process due to thread heartbeat failure\")\nException: Stopped dagster-daemon process due to thread heartbeat failure\n2023-09-04 08:13:17 +0000 - dagster.daemon - INFO - Instance is configured with the following daemons: ['AssetDaemon', 'BackfillDaemon', 'QueuedRunCoor\ndinatorDaemon', 'SchedulerDaemon', 'SensorDaemon']\n2023-09-04 08:13:18 +0000 - dagster-webserver - INFO - Serving dagster-webserver on http://0.0.0.0:3000 in process 2245886\n2023-09-04 08:18:53 +0000 - dagster.daemon - ERROR - Stopping dagster-daemon process since the following threads are no longer sending heartbeats: ['BA\nCKFILL']\n2023-09-04 08:18:53 +0000 - dagster.daemon - WARNING - Shutting down daemon threads due to Exception...\n\n\nWhen I run dagster dev, I get an error that the BACKFILL thread is not sending heartbeats anymore. I do not have any backfill jobs running. I suspect that the queue got corrupted somehow, which means that one part of dagster is not spawning jobs anymore whereas the other part is expecting heartbeats.\nI get that it is impossible to catch all of these bugs. But it would be nice if Dagster provided some functionality to reset its thread list and other essential components that might break over time. Unresolvable issues like these make it difficult to adopt Dagster in a professional environment.\nWhat did you expect to happen?\nNo response\nHow to reproduce?\nLikely very difficult, I think it happened because I shutdown dagster dev right as it was writing something to its state sqlite.\nUPDATE: see below, managed to reproduce crashing the backfill daemon by materialising 2k multi-assets\nDeployment type\nLocal\nDeployment details\nLocal deployment, very basic. I wrote my own PostgreSQL IO manager because of previous data corruption issues which were dismissed, but I do not think that could have caused this issue.\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-09-04T08:32:22Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16304",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  },
+  {
+    "id": "I_kwDOB9hbPs5wKCGz",
+    "number": 16307,
+    "title": "RangeError: Maximum call stack size exceeded on asset lineage page",
+    "bodyText": "Dagster version\n1.3.13\nWhat's the issue?\nDagit is not able to draw asset lineage, for two assets dependent on each other via partitions.\nI'm attempting to present lineage between list of assets, that undergo daily processing, where they are sometimes used as an input (or as a group of assets taken as input) and sometimes as an output (or in output group). Processing happens outside of dagster and I'm trying to have a representation of it in dagit.\nAs an example:\nassets = [a, b, c]\nday1: a -> c # c for this day is created out of a partition\nday2: c+b -> a  # this day a's partition is created from combination of c and b for this day\nWhile attempting that with time-based partitions I got circular dependency error.\nWith custom partitions, such correlation is visible on asset's definition tab (asset mentioned in upstream as well as downstream) but lineage page is filled with error:\nSorry, page can't be displayed.\nPlease report this error to the Dagster team via GitHub or Slack. Refresh the page to try again.\nMaximum call stack size exceeded\n\nRangeError: Maximum call stack size exceeded\n    at http://localhost:3000/static/js/129.72133081.chunk.js:1:29283\n    at Array.flatMap (<anonymous>)\n    at e (http://localhost:3000/static/js/129.72133081.chunk.js:1:29266)\n    at http://localhost:3000/static/js/129.72133081.chunk.js:1:29457\n    at Array.map (<anonymous>)\n    at e (http://localhost:3000/static/js/129.72133081.chunk.js:1:29433)\n    at http://localhost:3000/static/js/129.72133081.chunk.js:1:29457\n    at Array.map (<anonymous>)\n    at e (http://localhost:3000/static/js/129.72133081.chunk.js:1:29433)\n    at http://localhost:3000/static/js/129.72133081.chunk.js:1:29457\n\nIs this concept (of inter-dependant partitions, in both ins and outs for same group of assets) not available in dagster as of now?\nWhat did you expect to happen?\nLineage being drawn.\nHow to reproduce?\nThis code snippet can be used to illustrate the issue:\npartitions_def = StaticPartitionsDefinition([\"a\", \"b\", \"c\"])\npartitions_def2 = StaticPartitionsDefinition([\"d\", \"e\", \"f\"])\n\n@asset(\n    partitions_def=partitions_def,\n    ins={\n        \"upstream\": AssetIn(\n            key=[\"second_asset\"],\n            partition_mapping=SpecificPartitionsPartitionMapping([\"d\"])\n        ),\n    }\n)\ndef first_asset(upstream):\n    pass\n\n\n@asset(\n    partitions_def=partitions_def2,\n    ins={\n        \"upstream\": AssetIn(\n            key=[\"first_asset\"],\n            partition_mapping=SpecificPartitionsPartitionMapping([\"c\"])\n        ),\n    }\n)\ndef second_asset(upstream):\n    pass\n\n\ndefs = Definitions(assets=[first_asset, second_asset])\n\nDeployment type\nLocal\nDeployment details\nNo response\nAdditional information\nNo response\nMessage from the maintainers\nImpacted by this issue? Give it a \ud83d\udc4d! We factor engagement into prioritization.",
+    "state": "OPEN",
+    "createdAt": "2023-09-05T10:26:48Z",
+    "closedAt": null,
+    "url": "https://github.com/dagster-io/dagster/issues/16307",
+    "labels": {
+      "nodes": [
+        {
+          "name": "type: bug",
+          "description": "Something isn't working"
+        }
+      ]
+    },
+    "reactions": {
+      "totalCount": 0
+    }
+  }
+]
