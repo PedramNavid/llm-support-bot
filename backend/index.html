@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask a Question</title>
+</head>
+<body>
+    <h2>Ask your question:</h2>
+    <textarea id="question" rows="4" cols="50"></textarea><br><br>
+    <button onclick="postQuestion()">Submit</button>
+
+    <h2>Response:</h2>
+    <pre id="response"></pre>
+
+    <script>
+        async function postQuestion() {
+            const questionText = document.getElementById("question").value;
+            const responseElement = document.getElementById("response");
+
+            try {
+                let response = await fetch("http://localhost:8000/ask/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ question: questionText })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                const responseData = await response.json();
+                responseElement.textContent = responseData.response;
+            } catch (error) {
+                responseElement.textContent = "Error: " + error;
+            }
+        }
+    </script>
+</body>
+</html>
+

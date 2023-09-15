@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="llm-support-bot",
@@ -6,10 +6,16 @@ setup(
     packages=find_packages(),
     install_requires=[
         "gql[requests]",
-        "langchain==0.0.281",
+        "chromadb",
+        "pinecone-client",
+        "pydantic==1.10.11",
         "python-dotenv",
         "requests",
-        "jq",
+        "fastapi",
+        "uvicorn",
+        "llama-index",
+        "click",
+        "sentence-transformers"
     ],
     extras_require={"dev": ["black", "ruff", "mypy"]},
     entry_points={},
