@@ -14,8 +14,9 @@ const QuestionComponent: React.FC = () => {
                 question: question
             };
 
+            let url = `${process.env.GATSBY_API_URL}/ask`
 
-            const responseRaw = await fetch('http://192.168.1.140:3000/ask',
+            const responseRaw = await fetch(url,
                 {
                     method: 'POST',
                     headers: {
