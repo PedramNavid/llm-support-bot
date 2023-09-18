@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 model = os.environ.get("OPENAI_MODEL", "gpt-3.5-turbo-16k")
 
+
 def init_model(model=model):
     logging.info("Initializing model")
     llm = openai_model(model=model)
@@ -23,24 +24,21 @@ def init_model(model=model):
     index = storage.load_index()
 
     template = (
-        "We have provided Github Issues and Discussions as context below."
-        "---------------------"
-        "{context_str}"
-        "---------------------"
-        "You are a support bot, searching for relevant information in Github Issues and Discussions."
-        "You will receive a question from the user, and will try to find relevant information."
-        "If you find a relevant result, include the type, name, and URL of the document, as well as a possible solution to their problem."
-        "An Example Answer:"
-        "Summary: (summarize the question)"
-        "Relevant Issues: (link to the issues or discussions)"
-        "(Your Answer below)"
-        "Given this information, please answer the question: {query_str}\n"
+        "We have provided Github Issues and Discussions as context"
+        " below.---------------------{context_str}---------------------You are a"
+        " support bot, searching for relevant information in Github Issues and"
+        " Discussions.You will receive a question from the user, and will try to find"
+        " relevant information.If you find a relevant result, include the type, name,"
+        " and URL of the document, as well as a possible solution to their problem.An"
+        " Example Answer:Summary: (summarize the question)Relevant Issues: (link to the"
+        " issues or discussions)(Your Answer below)Given this information, please"
+        " answer the question: {query_str}\n"
     )
     qa_template = PromptTemplate(template)
     query_engine = index.as_query_engine(
         service_context=service_context,
         text_qa_template=qa_template,
-        similarity_top_k=10,
+        similarity_top_k=6,
     )
     return query_engine
 
@@ -49,6 +47,7 @@ def ask_question(query_engine, question):
     logger.info("Asking question from query engine")
     response = query_engine.query(question)
     return response
+
 
 @click.command()
 @click.argument("question")
