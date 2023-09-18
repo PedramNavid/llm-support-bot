@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import { Container, CssBaseline, Grid, Stack, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { Container, Stack, ThemeProvider, Typography, createTheme } from '@mui/material';
 import QuestionComponent from './components/question';
 import lightThemeOptions from '../styles/theme/lightThemeOptions';
 

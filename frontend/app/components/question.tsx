@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { MuiMarkdown, getOverrides } from 'mui-markdown';
 import { Highlight, themes } from 'prism-react-renderer';
-import { Button, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, Typography, styled } from '@mui/material';
+import { Button, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 const host = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 const url = host + "/ask"
@@ -15,7 +15,7 @@ const QuestionComponent: React.FC = () => {
     const [response, setResponse] = useState<string | null>(null);
     const [selectedModel, setSelectedModel] = useState('gpt3');
 
-    const handleModelChange = (event) => {
+    const handleModelChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setSelectedModel(event.target.value);
     };
 
