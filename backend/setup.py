@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="llm-support-bot",
+    name="llm_support_bot",
     version="0.1.0",
     packages=find_packages(),
     install_requires=[
@@ -15,7 +15,8 @@ setup(
         "uvicorn",
         "llama-index",
         "click",
-        "sentence-transformers"
+        "sentence-transformers",
+        "psycopg[binary]",
     ],
     extras_require={"dev": ["black", "ruff", "mypy"]},
     entry_points={},

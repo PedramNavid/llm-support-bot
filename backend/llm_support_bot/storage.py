@@ -1,21 +1,17 @@
 import click
-import logging
 import os
-import sys
 
 import pinecone
-import document_parser as dp
 from llama_index import (
     ServiceContext,
     StorageContext,
     VectorStoreIndex,
     set_global_service_context,
 )
+from llm_support_bot import document_parser as dp
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.vector_stores import PineconeVectorStore
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 if not PINECONE_API_KEY:

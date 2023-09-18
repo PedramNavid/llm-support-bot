@@ -1,15 +1,18 @@
 """Main webserver file for the Question Answering API."""
+import logging
 import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from question import ask_question, init_model
-import logging
+
+from llm_support_bot.question import ask_question, init_model
 
 app = FastAPI()
 query_engine = init_model("gpt-3.5-turbo-16k")
 query_engine_gpt4 = init_model("gpt-4")
 logger = logging.getLogger(__name__)
+
 
 class Question(BaseModel):
     question: str
@@ -29,12 +32,12 @@ app.add_middleware(
 
 @app.post("/ask")
 async def read_question(q: Question):
-    model = 'gpt3'
+    model = "gpt3"
     logger.info(f"Asked Question: {q} with model: {model}")
     try:
         if model == "gpt4":
             response = ask_question(query_engine_gpt4, q.question)
-        elif 'gpt3' in model:
+        elif "gpt3" in model:
             response = ask_question(query_engine, q.question)
         else:
             return HTTPException(status_code=400, detail="Invalid model specified")

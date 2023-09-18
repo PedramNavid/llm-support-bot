@@ -1,12 +1,16 @@
-import click
+import datetime
 import logging
 import os
 import sys
+
+import click
 from llama_index import ServiceContext, set_global_service_context
 from llama_index.prompts import PromptTemplate
-import storage
 
-from model import openai_model
+from llm_support_bot import storage
+from llm_support_bot.types import Event
+from llm_support_bot.model import openai_model
+from llm_support_bot.db import get_connection, write_event
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
@@ -38,14 +42,33 @@ def init_model(model=model):
     query_engine = index.as_query_engine(
         service_context=service_context,
         text_qa_template=qa_template,
-        similarity_top_k=6,
+        similarity_top_k=8,
     )
     return query_engine
 
 
 def ask_question(query_engine, question):
+    conn = get_connection()
+    datetime.datetime.now()
     logger.info("Asking question from query engine")
     response = query_engine.query(question)
+    source_nodes = [
+        {"node_id": i.node_id, "text": i.text, "score": i.score}
+        for i in response.source_nodes
+    ]
+    event = Event(
+        prompt=question,
+        answer=response.response,
+        metadata={
+            "model": model,
+            "response_metadata": response.metadata,
+            "source_nodes": source_nodes,
+        },
+    )
+
+    write_event(conn, event.as_dict())
+    datetime.datetime.now()
+
     return response
 
 

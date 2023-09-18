@@ -1,8 +1,9 @@
 from llama_index.llms import LlamaCPP, OpenAI
-from llama_index.llms.llama_utils import messages_to_prompt, completion_to_prompt
+from llama_index.llms.llama_utils import completion_to_prompt, messages_to_prompt
+
 
 def llama_model():
-    model_url = 'https://huggingface.co/TheBloke/CodeLlama-13B-Instruct-GGUF/resolve/main/codellama-13b-instruct.Q6_K.gguf'
+    model_url = "https://huggingface.co/TheBloke/CodeLlama-13B-Instruct-GGUF/resolve/main/codellama-13b-instruct.Q6_K.gguf"
     llm = LlamaCPP(
         model_url=model_url,
         temperature=0.1,
@@ -15,6 +16,7 @@ def llama_model():
         verbose=False,
     )
     return llm
+
 
 def openai_model(model):
     return OpenAI(model=model)

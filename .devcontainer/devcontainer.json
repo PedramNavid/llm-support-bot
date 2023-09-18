@@ -6,6 +6,9 @@
 		"context": "..",
 		"dockerfile": "Dockerfile"
 	},
+	"remoteEnv": {
+		"DATABASE_URL": "${localenv:DATABASE_URL}"
+	},
 	"runArgs": [
 		"--env-file",
 		".env"

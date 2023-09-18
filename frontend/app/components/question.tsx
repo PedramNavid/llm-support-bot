@@ -68,7 +68,7 @@ const QuestionComponent: React.FC = () => {
                         <FormLabel id="radio-buttons-group-label">Model</FormLabel>
                         <RadioGroup
                             aria-labelledby="radio-buttons-group-label"
-                            defaultValue="gpt-3.5"
+                            defaultValue="gpt3"
                             name="radio-buttons-group"
                             value={selectedModel}
                             onChange={handleModelChange}

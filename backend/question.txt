@@ -1,2 +1,0 @@
-Hi!  Is there any way to change the partitioning name (replace default with something else)? I noticed that it was possible for multiple partitioning, but I don't see how to do it when the partitioning is not multiple. Thanks in advance
-

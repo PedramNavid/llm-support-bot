@@ -4,7 +4,7 @@ install:
 	cd frontend && npm install && npm build
 
 dev-api:
-	uvicorn main:app --reload --port 3000 --host 0.0.0.0 --workers 1 --app-dir=./backend
+	uvicorn main:app --reload --port 3000 --host 0.0.0.0 --workers 1 --app-dir=./backend/llm_support_bot
 
 dev-web:
 	cd frontend && npm run dev -- --port 8000

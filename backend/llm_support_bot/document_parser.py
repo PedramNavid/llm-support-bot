@@ -7,7 +7,7 @@ from typing import List
 from llama_index import Document
 from llama_index.node_parser import SimpleNodeParser
 from llama_index.schema import MetadataMode, NodeRelationship, RelatedNodeInfo
-from options import CHUNK_OVERLAP, CHUNK_SIZE
+from llm_support_bot.options import CHUNK_OVERLAP, CHUNK_SIZE
 
 
 def issue_to_document(issue: dict):
