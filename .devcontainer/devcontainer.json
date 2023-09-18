@@ -1,0 +1,44 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/miniconda
+{
+	"name": "Miniconda (Python 3)",
+	"build": {
+		"context": "..",
+		"dockerfile": "Dockerfile"
+	},
+	"runArgs": [
+		"--env-file",
+		".env"
+	],
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "18",
+			"nvmVersion": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.black-formatter",
+				"dbaeumer.vscode-eslint",
+				"charliermarsh.ruff",
+				"ms-python.pylint",
+				"esbenp.prettier-vscode"
+			],
+			"python.analysis.include": ["./backend"]
+		}
+	},
+	"forwardPorts": [
+		3000,
+		8000
+	],
+	"postStartCommand": "cd backend && pip install --user -e ."
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "python --version",
+	// Configure tool-specific properties.
+	// "customizations": {},
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}

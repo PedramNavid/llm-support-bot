@@ -16,5 +16,5 @@ def llama_model():
     )
     return llm
 
-def openai_model():
-    return OpenAI(model="gpt-4")
+def openai_model(model):
+    return OpenAI(model=model)

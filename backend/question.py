@@ -10,10 +10,13 @@ from model import openai_model
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+logger = logging.getLogger(__name__)
+
 model = os.environ.get("OPENAI_MODEL", "gpt-3.5-turbo-16k")
 
-def init_model():
-    llm = openai_model()
+def init_model(model=model):
+    logging.info("Initializing model")
+    llm = openai_model(model=model)
     embed_model = storage.get_embedding_model()
     service_context = ServiceContext.from_defaults(llm=llm, embed_model=embed_model)
     set_global_service_context(service_context)
@@ -43,9 +46,9 @@ def init_model():
 
 
 def ask_question(query_engine, question):
+    logger.info("Asking question from query engine")
     response = query_engine.query(question)
     return response
-
 
 @click.command()
 @click.argument("question")

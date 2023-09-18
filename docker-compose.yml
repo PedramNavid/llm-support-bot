@@ -1,0 +1,13 @@
+version: '3'
+services:
+  backend:
+    build: backend
+    volumes:
+      - .:/workspace:cached
+    command: uvicorn main:app --reload --port 3000 --host 0.0.0.0 --workers 1 --app-dir=./backend
+
+  frontend:
+    build: frontend
+    volumes:
+      - .:/workspace:cached
+    command: npm run serve --port 8000 --host 0.0.0.0
