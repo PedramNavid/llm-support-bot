@@ -14,7 +14,7 @@ def write_event(conn, event: dict):
     with conn.cursor() as cur:
         insert = """
             INSERT INTO responses (prompt, answer, metadata, created_at, ended_at)
-            VALUES (%(prompt)s, %(answer)s, %(metadata)s, %(created_at)s %(ended_at)s)
+            VALUES (%(prompt)s, %(answer)s, %(metadata)s, %(created_at)s, %(ended_at)s)
             """
 
         cur.execute(insert, event)
