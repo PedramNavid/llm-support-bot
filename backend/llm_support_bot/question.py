@@ -49,9 +49,10 @@ def init_model(model=model):
 
 def ask_question(query_engine, question):
     conn = get_connection()
-    datetime.datetime.now()
+    start = datetime.datetime.now()
     logger.info("Asking question from query engine")
     response = query_engine.query(question)
+    end = datetime.datetime.now()
     source_nodes = [
         {"node_id": i.node_id, "text": i.text, "score": i.score}
         for i in response.source_nodes
@@ -64,10 +65,11 @@ def ask_question(query_engine, question):
             "response_metadata": response.metadata,
             "source_nodes": source_nodes,
         },
+        created_at=start,
+        ended_at=end,
     )
 
     write_event(conn, event.as_dict())
-    datetime.datetime.now()
 
     return response
 

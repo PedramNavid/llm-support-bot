@@ -7,4 +7,4 @@ WORKDIR /app
 COPY setup.py .
 RUN pip install -e .
 COPY . .
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--app-dir=./backend/llm_support_bot"]
