@@ -9,11 +9,11 @@ const lightTheme = createTheme(lightThemeOptions);
 export default function HomePage() {
   return (
     <ThemeProvider theme={lightTheme}>
-      <Container maxWidth="md" sx={{
+      <Container maxWidth="xl" sx={{
         minHeight: '100vw'
       }
       }>
-        <Stack spacing={2}>
+        <Stack spacing={2} >
           <Typography variant="h4" component="h1" gutterBottom>
             LLM Support Bot
           </Typography>
