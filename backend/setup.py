@@ -6,9 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "gql[requests]",
-        "chromadb",
         "pinecone-client",
-        "pydantic==1.10.11",
         "python-dotenv",
         "requests",
         "fastapi",
