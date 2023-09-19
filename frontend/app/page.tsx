@@ -1,14 +1,30 @@
 'use client';
 import * as React from 'react';
-import { Container, Stack, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { Container, Stack, Typography } from '@mui/material';
 import QuestionComponent from './components/question';
-import lightThemeOptions from '../styles/theme/lightThemeOptions';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-const lightTheme = createTheme(lightThemeOptions);
 
 export default function HomePage() {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = React.useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode],
+  );
+
   return (
-    <ThemeProvider theme={lightTheme}>
+    <ThemeProvider theme={theme}>
+
+      <CssBaseline />
+
       <Container maxWidth="xl" sx={{
         minHeight: '100vw'
       }
@@ -19,6 +35,8 @@ export default function HomePage() {
           </Typography>
           <QuestionComponent />
         </Stack>
-      </Container ></ThemeProvider>
+      </Container >
+    </ThemeProvider>
+
   );
 }

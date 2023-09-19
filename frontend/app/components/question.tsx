@@ -86,7 +86,6 @@ const QuestionComponent: React.FC = () => {
                     <Box sx={{
                         gap: 4,
                         p: 4,
-                        bgcolor: 'background.paper',
                         boxShadow: 1,
                         borderRadius: 4,
                         minHeight: '400px'
