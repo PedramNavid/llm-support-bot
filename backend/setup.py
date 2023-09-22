@@ -7,6 +7,8 @@ setup(
     install_requires=[
         "gql[requests]",
         "pinecone-client",
+        "pydantic==1.10.11",
+        "langchain[openai]",
         "python-dotenv",
         "requests",
         "fastapi",
